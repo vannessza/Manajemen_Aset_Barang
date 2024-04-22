@@ -48,14 +48,15 @@
                         @php($i++)
                         <tr>
                           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $i }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800"></td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800"></td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800"></td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800"></td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->kodePeminjaman }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->user->name }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->aset->namaAset }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPeminjaman }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->status }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                            <a href="{{ route('detailaset.index', $da->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
-                            <a href="{{ route('dataaset.edit', $da->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>
-                            <a href="{{ route('dataaset.delete', $da->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-500 hover:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</a>
+                            <a href="{{ route('Peminjaman.show', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
+                            <a href="{{ route('dataaset.edit', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>
+                            <a href="{{ route('dataaset.delete', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-500 hover:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</a>
                           </td>
                         </tr>
                         @endforeach

@@ -33,5 +33,6 @@ Route::post('/data aset/detail aset/show/{id}', [AsetDetailController::class, 's
 //peminjaman Admin dan super admin
 Route::get('/peminjaman', [PeminjamanController::class, 'index'])->name('peminjaman.index');
 Route::get('/peminjaman/create', [PeminjamanController::class, 'create'])->name('peminjaman.create');
-
+Route::post('/peminjaman/store', [PeminjamanController::class, 'store'])->name('peminjaman.store');
+Route::get('/peminjaman/show/{id}', [PeminjamanController::class, 'show'])->name('Peminjaman.show');
 Route::post('/logout', [LoginController::class, 'logout']);

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Divisi extends Model
 {
     use HasFactory;
+    protected $table = "divisi";
 
     public function userProfile()
     {

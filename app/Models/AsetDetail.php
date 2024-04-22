@@ -18,4 +18,7 @@ class AsetDetail extends Model
     public function History(){
         return $this->hasMany(History::class);
     }
+    public function Peminjaman(){
+        return $this->hasMany(Peminjaman::class);
+    }
 }

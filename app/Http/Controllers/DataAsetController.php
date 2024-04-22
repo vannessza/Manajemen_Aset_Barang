@@ -38,7 +38,7 @@ class DataAsetController extends Controller
         $lastAset = Aset::latest()->first();
         if ($lastAset) {
             $lastNumber = intval(substr($lastAset->kodeAset, 2)); // Ambil nomor dari kode terakhir
-            $kodeAset = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT); // Buat kode baru dengan nomor yang lebih besar
+            $kodeAset = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT); // Buat kode baru dengan nomor yang lebih besar
         } else {
             // Jika belum ada aset sebelumnya, mulai dengan nomor 0001
             $kodeAset = '001';
@@ -64,7 +64,7 @@ class DataAsetController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         //
     }

@@ -9,8 +9,6 @@ class Lokasi extends Model
 {
     use HasFactory;
 
-    public function Divisi()
-    {
-        return $this->hasMany(Divisi::class);
-    }
+    protected $table = "lokasi";
+    protected $fillable = ['kodeLokasi', 'alamat'];
 }

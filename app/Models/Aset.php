@@ -14,5 +14,7 @@ class Aset extends Model
     {
         return $this->hasMany(AsetDetail::class);
     }
-    
+    public function Peminjaman(){
+        return $this->hasMany(Peminjaman::class);
+    }
 }
