@@ -6,6 +6,7 @@ use App\Models\Lokasi;
 use App\Models\Peminjaman;
 use App\Models\User;
 use App\Models\Aset;
+use App\Models\AsetDetail;
 use Illuminate\Http\Request;
 
 class PeminjamanController extends Controller
@@ -33,6 +34,12 @@ class PeminjamanController extends Controller
 
         return view('dashboard.transaksi.peminjaman.peminjamancreate', compact('user', 'aset', 'lokasi'),[
             'title' => 'Create Peminjaman'
+        ]);
+    }
+    public function createpinjamuser($id){
+        $asetDetail = AsetDetail::findOrFail($id);
+        return view('dashboard.kelolaaset.aset.pinjamcreate', compact('asetDetail'), [
+            'title' => 'Aset Detail'
         ]);
     }
 

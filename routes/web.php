@@ -20,6 +20,7 @@ Route::get('/home', function(){
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::get('/aset', [AsetController::class, 'index'])->name('aset.index');
 Route::get('/aset/show/{id}', [AsetController::class, 'show'])->name('aset.show');
+Route::get('/aset/show/pinjam/{id}', [PeminjamanController::class, 'createpinjamuser'])->name('aset.pinjam');
 // data aset
 Route::get('/data aset', [DataAsetController::class, 'index'])->name('dataaset.index');
 Route::get('/data aset/create', [DataAsetController::class, 'create'])->name('dataaset.create');

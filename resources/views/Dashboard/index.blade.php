@@ -6,8 +6,8 @@
         <div class="p-4 text-center">
             <h1 class="font-semibold text-xl mb-8">Selamat Datang Super Admin</h1>
             <div class="flex flex-wrap justify-center gap-4 font-bold">
-                <a href="#" class="flex items-center justify-center py-4 px-8 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data Aset</div></a>
-                <a href="#" class="flex items-center justify-center py-4 px-8 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Peminjaman</div></a>
+                <a href="" class="flex items-center justify-center py-4 px-8 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data Aset</div></a>
+                <a href="{{ route('peminjaman.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Peminjaman</div></a>
                 <a href="#" class="flex items-center justify-center py-4 px-8 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Pengembalian</div></a>
                 <a href="#" class="flex items-center justify-center py-4 px-8 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data User</div></a>
             </div>

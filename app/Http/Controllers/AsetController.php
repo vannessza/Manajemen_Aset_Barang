@@ -41,7 +41,7 @@ class AsetController extends Controller
     public function show($id)
     {
         $asetDetail = AsetDetail::findOrFail($id);
-        return view('dashboard.kelolaaset.aset.', compact('asetDetail'), [
+        return view('dashboard.kelolaaset.aset.showaset', compact('asetDetail'), [
             'title' => 'Aset Detail'
         ]);
     }
