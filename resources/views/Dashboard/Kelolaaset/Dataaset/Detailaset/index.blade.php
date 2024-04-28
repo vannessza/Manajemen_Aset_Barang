@@ -3,7 +3,7 @@
 @section('container')
 
 <div class="container mt-36 mb-10">
-    <div class="bg-white w-auto rounded-xl shadow-xl py-5 px-8">
+    <div class="bg-white w-auto rounded-xl shadow-xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div>
             <div>
                 <h1 class="text-xl font-bold text-gray-800">Detail Aset Register</h1>
@@ -91,8 +91,8 @@
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $ad['status'] }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                             <a href="{{ route('detailaset.show', $ad->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
-                            <a href="" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>
-                            <a href="" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-500 hover:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</a>
+                            <a href="{{ route('detailaset.edit', ['aset' => $aset->id, 'asetDetail' => $ad->id]) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>
+                            <a href="{{ route('detailaset.delete', ['aset' => $aset->id, 'asetDetail' => $ad->id]) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-500 hover:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</a>
                           </td>
                         </tr>
                         @endforeach

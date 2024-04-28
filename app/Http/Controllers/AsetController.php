@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\AsetDetail;
+use App\Models\Aset;
 class AsetController extends Controller
 {
     /**
@@ -11,7 +12,11 @@ class AsetController extends Controller
      */
     public function index()
     {
-        //
+        $aset = Aset::all();
+        $asetDetail = AsetDetail::all();
+        return view('dashboard.kelolaaset.aset.index', compact('aset', 'asetDetail'), [
+            'title' => 'Aset Detail'
+        ]);
     }
 
     /**
@@ -33,9 +38,12 @@ class AsetController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $asetDetail = AsetDetail::findOrFail($id);
+        return view('dashboard.kelolaaset.aset.', compact('asetDetail'), [
+            'title' => 'Aset Detail'
+        ]);
     }
 
     /**

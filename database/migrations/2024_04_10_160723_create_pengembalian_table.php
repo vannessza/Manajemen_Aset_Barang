@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string("kodePengembalian");
             $table->string("tglPengembalian");
             $table->string("status");
+            $table->unsignedBigInteger("lokasi_id");
             $table->string("keterangan");
             $table->string("image")->nullable();
             $table->timestamps();
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('aset_id')->references('id')->on('aset')->onDelete('cascade');
             $table->foreign('nama_aset_id')->references('id')->on('aset_detail')->onDelete('cascade');
+            $table->foreign('lokasi_id')->references('id')->on('lokasi')->onDelete('cascade');
         });
     }
 

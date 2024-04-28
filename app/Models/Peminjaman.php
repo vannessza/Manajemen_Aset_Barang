@@ -13,13 +13,16 @@ class Peminjaman extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
     public function aset(){
-        return $this->belongsTo(Aset::class);
+        return $this->belongsTo(Aset::class, 'aset_id');
     }
     public function AsetDetail(){
-        return $this->belongsTo(AsetDetail::class);
+        return $this->belongsTo(AsetDetail::class, 'nama_aset_id');
+    }
+    public function pengembalian(){
+        return $this->hasMany(Pengembalian::class);
     }
     
 }

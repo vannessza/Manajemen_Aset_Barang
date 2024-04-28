@@ -10,7 +10,7 @@
             </a>
            
             <div class="m-auto">
-                <h1 class="font-bold text-xl text-center">Aset Register</h1>
+                <h1 class="font-bold text-xl text-center">Aset</h1>
             </div>
             
         </div>
@@ -61,8 +61,8 @@
                     </div>
                 </div>
                 <div class="max-w-lg my-10">
-                    <label for="tanggal" class="block text-sm font-medium mb-2">Tanggal</label>
-                    <input type="date" id="tanggal" name="tanggal" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:ring-2" placeholder="Tanggal" required>
+                    <label for="tanggal" class="block text-sm font-medium mb-2">Tanggal Pembelian</label>
+                    <input type="date" id="tanggal" name="tanggal" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:ring-2" placeholder="Tanggal pembelian" required>
                 </div>
         
                 <div class="py-2 bg-gray-100 rounded-lg my-10" data-hs-input-number="">

@@ -3,24 +3,24 @@
 @section('container')
 
 <div class="container mt-36 mb-10">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 m-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl py-5 px-8 m-auto">
         <div class="flex p-6">
-            <a href="{{ route('peminjaman.index') }}">
+            <a href="{{ route('pengembalian.index') }}">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path d="M32 15H3.41l8.29-8.29-1.41-1.42-10 10a1 1 0 0 0 0 1.41l10 10 1.41-1.41L3.41 17H32z" data-name="4-Arrow Left"/></svg>
             </a>
            
             <div class="m-auto">
-                <h1 class="text-lg font-semibold text-gray-900">Peminjaman</h1>
+                <h1 class="text-lg font-semibold text-gray-900">Pengembalian</h1>
             </div>
             
         </div>
         <div class="mx-auto block max-w-xl rounded-lg bg-white p-6 shadow-4">
-            <form action="{{ route('peminjaman.store') }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('pengembalian.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
-                        <label for="select-label" class="block mb-2 text-sm font-medium text-gray-900">Nama Peminjam</label>
-                        <select id="select-label" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" name="namaPeminjam" data-hs-select='{
+                        <label for="select-label" class="block mb-2 text-sm font-medium text-gray-900">Nama Pengembali</label>
+                        <select id="select-label" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" name="namaPengembali" data-hs-select='{
                             "placeholder": "Select assignee",
                             "toggleTag": "<button type=\"button\"><span class=\"me-2\" data-icon></span><span class=\"text-gray-800\" data-title></span></button>",
                             "toggleClasses": "hs-select-disabled:pointer-events-none hs-select-disabled:opacity-50 relative py-3 px-4 pe-9 flex text-nowrap w-full cursor-pointer bg-white border border-gray-200 rounded-lg text-start text-sm focus:border-blue-500 focus:ring-blue-500 before:absolute before:inset-0 before:z-[1]",
@@ -29,21 +29,19 @@
                             "optionTemplate": "<div class=\"flex items-center\"><div class=\"me-2\" data-icon></div><div><div class=\"hs-selected:font-semibold text-sm text-gray-800\" data-title></div></div><div class=\"ms-auto\"><span class=\"hidden hs-selected:block\"><svg class=\"flex-shrink-0 size-4 text-blue-600\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z\"/></svg></span></div></div>",
                             "extraMarkup": "<div class=\"absolute top-1/2 end-3 -translate-y-1/2\"><svg class=\"flex-shrink-0 size-3.5 text-gray-500\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/></svg></div>"
                         }'>
-                        <option value="">Pilih Nama Peminjam</option>
-                        @foreach ($user as $us)
-    
-                        <option value="{{ $us->id }}">{{ $us->name }}</option>
-    
-                        @endforeach
+                            <option value="">Pilih Nama Pengembali</option>
+                            @php
+                                $uniqueUsers = $peminjaman->unique('user_id'); // Filter nama pengembali yang unik
+                            @endphp
+                            @foreach ($uniqueUsers as $pe)
+                                <option value="{{ $pe->user->id }}">{{ $pe->user->name }}</option>
+                            @endforeach
                         </select>                    
-                    </div>
+                    </div>                    
                     <div class="">
                         <label for="aset" class="block mb-2 text-sm font-medium text-gray-900">Aset</label>
                         <select id="aset" name="aset" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
                             <option value="">Pilih Aset</option>
-                            @foreach ($aset as $as)
-                                <option value="{{ $as->id }}">{{ $as->namaAset }}</option>
-                            @endforeach
                         </select>
                     </div>
                     <div class="">
@@ -53,11 +51,11 @@
                         </select>
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="tglPeminjaman" class="block mb-2 text-sm font-medium text-gray-90">Tanggal Peminjaman</label>
-                        <input type="date" name="tglPeminjaman" id="tglPeminjaman" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Product brand" required="">
+                        <label for="tglPengembalian" class="block mb-2 text-sm font-medium text-gray-90">Tanggal Pengembalian</label>
+                        <input type="date" name="tglPengembalian" id="tglPengembalian" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Product brand" required="">
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="lokasi" class="block mb-2 text-sm font-medium text-gray-900">Lokasi Peminjaman</label>
+                        <label for="lokasi" class="block mb-2 text-sm font-medium text-gray-900">Lokasi Pengembalian</label>
                         <select id="lokasi" name="lokasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
                             <option value="">Pilih Lokasi</option>
                             @foreach ($lokasi as $lo)
@@ -93,29 +91,87 @@
     </div>
 </div>
 <script>
-    document.getElementById('aset').addEventListener('change', function() {
-        var selectedAsetId = this.value;
-        var namaAsetDropdown = document.getElementById('namaAset');
-        
-        // Menghapus semua opsi saat ini
-        namaAsetDropdown.innerHTML = '';
-        
-        // Menambahkan opsi default
-        var defaultOption = document.createElement('option');
-        defaultOption.text = 'Pilih Nama Aset';
-        namaAsetDropdown.add(defaultOption);
-        
-        // Filter dan tambahkan opsi yang sesuai
-        @foreach ($aset as $as)
-            if ({{ $as->id }} == selectedAsetId) {
-                @foreach ($as->asetDetail as $detail)
-                    var option = document.createElement('option');
-                    option.value = "{{ $detail->id }}";
-                    option.text = "{{ $detail->namaAset }}";
-                    namaAsetDropdown.add(option);
+document.getElementById('select-label').addEventListener('change', function() {
+    var selectedUserId = this.value;
+    var asetDropdown = document.getElementById('aset');
+    var namaAsetDropdown = document.getElementById('namaAset');
+
+    // Menghapus semua opsi saat ini
+    asetDropdown.innerHTML = '';
+    namaAsetDropdown.innerHTML = ''; // Kosongkan juga dropdown namaAset
+
+    // Menambahkan opsi default
+    var defaultOptionAset = document.createElement('option');
+    defaultOptionAset.text = 'Pilih Aset';
+    asetDropdown.add(defaultOptionAset);
+
+    var defaultOptionNamaAset = document.createElement('option');
+    defaultOptionNamaAset.text = 'Pilih Nama Aset';
+    namaAsetDropdown.add(defaultOptionNamaAset);
+
+    // Filter dan tambahkan opsi aset yang dipinjam oleh pengguna yang dipilih
+    var matchingAssets = [];
+
+    @foreach ($peminjaman as $pe)
+        // Pastikan $pe adalah objek Peminjaman yang valid
+        @if ($pe instanceof App\Models\Peminjaman)
+            if ({{ $pe->user->id }} == selectedUserId) {
+                matchingAssets.push({
+                    id: "{{ $pe->aset->id }}",
+                    namaAset: "{{ $pe->aset->namaAset }}"
+                });
+            }
+        @endif
+    @endforeach
+
+    // Tambahkan opsi aset yang sesuai dengan user yang dipilih
+    matchingAssets.forEach(function(asset) {
+        var optionAset = document.createElement('option');
+        optionAset.value = asset.id;
+        optionAset.text = asset.namaAset;
+        asetDropdown.add(optionAset);
+    });
+});
+
+document.getElementById('aset').addEventListener('change', function() {
+    var selectedAsetId = this.value;
+    var selectedUserId = document.getElementById('select-label').value;
+    var namaAsetDropdown = document.getElementById('namaAset');
+
+    // Menghapus semua opsi saat ini
+    namaAsetDropdown.innerHTML = '';
+
+    // Menambahkan opsi default
+    var defaultOption = document.createElement('option');
+    defaultOption.text = 'Pilih Nama Aset';
+    namaAsetDropdown.add(defaultOption);
+
+    // Filter dan tambahkan opsi yang sesuai dengan aset yang dipinjam oleh user yang dipilih
+    var matchingAssetDetails = [];
+
+    @foreach ($peminjaman as $pe)
+        // Pastikan $pe adalah objek Peminjaman yang valid
+        @if ($pe instanceof App\Models\Peminjaman)
+            if ({{ $pe->user->id }} == selectedUserId && {{ $pe->aset->id }} == selectedAsetId) {
+                @foreach ($pe->aset->asetDetail as $detail)
+                    matchingAssetDetails.push({
+                        id: "{{ $detail->id }}",
+                        namaAset: "{{ $detail->namaAset }}"
+                    });
                 @endforeach
             }
-        @endforeach
+        @endif
+    @endforeach
+
+    // Tambahkan opsi yang sesuai dengan aset detail yang dipinjam oleh user yang dipilih
+    matchingAssetDetails.forEach(function(assetDetail) {
+        var option = document.createElement('option');
+        option.value = assetDetail.id;
+        option.text = assetDetail.namaAset;
+        namaAsetDropdown.add(option);
     });
+});
+
+
 </script>
 @endsection

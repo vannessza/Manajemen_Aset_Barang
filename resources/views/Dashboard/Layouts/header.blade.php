@@ -37,7 +37,7 @@ items-center z-10 h-[100px]">
                         </button>
                         <div id="dropdown-menu" class="lg:absolute bg-white  rounded-b-md ml-4 p-4 shadow-xl w-[285px] lg:w-40 hidden ">
                             <ul class="space-y-2">
-                                <li><a href="/aset" class="flex p-2 font-medium rounded-md hover:text-[#008d8d] <?php echo Request::is('aset') ? ' text-[#008d8d] lg:border-b-2 lg:border-[#008d8d]' : ''; ?>">Aset</a></li>
+                                <li><a href="{{ route('aset.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d] <?php echo Request::is('aset') ? ' text-[#008d8d] lg:border-b-2 lg:border-[#008d8d]' : ''; ?>">Aset</a></li>
                                 <li><a href="{{ route('dataaset.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d] <?php echo Request::is('data aset') ? ' text-[#008d8d] lg:border-b-2 lg:border-[#008d8d]' : ''; ?>">Data Aset</a></li>
                             </ul>
                         </div>
@@ -53,7 +53,7 @@ items-center z-10 h-[100px]">
                             <ul class="space-y-2">
                                 <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Request</a></li>
                                 <li><a href="{{ route('peminjaman.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Peminjaman</a></li>
-                                <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Pengembalian</a></li>
+                                <li><a href="{{ route('pengembalian.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Pengembalian</a></li>
                                 <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Penghancuran</a></li>
                             </ul>
                         </div>

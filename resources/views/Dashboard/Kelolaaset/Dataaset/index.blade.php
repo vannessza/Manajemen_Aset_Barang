@@ -2,7 +2,7 @@
 
 @section('container')
 <div class="container mt-36 mb-10">
-    <div class="bg-white w-auto rounded-xl shadow-xl py-5 px-8">
+    <div class="bg-white w-auto rounded-xl shadow-xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div class="flex justify-between items-center">
           <div>
             <h1 class="text-xl font-bold text-gray-800">Aset Register</h1>

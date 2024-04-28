@@ -38,7 +38,6 @@ class AsetDetailController extends Controller
      */
     public function store($id, Request $request)
     {
-        $aset = Aset::findOrFail($id);
         $detailAset = AsetDetail::create([
             'aset_id' => $id,
             'namaAset' => $request->namaAset,
@@ -68,24 +67,45 @@ class AsetDetailController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AsetDetail $asetDetail)
+    public function edit($aset, $asetDetail)
     {
-        //
+        $aset = Aset::findOrFail($aset);
+        $asetDetail = AsetDetail::findOrFail($asetDetail);
+        return view('dashboard.kelolaaset.dataaset.detailaset.detailasetedit', compact('aset', 'asetDetail'), [
+            'title' => 'Create Aset'
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, AsetDetail $asetDetail)
+    public function update($aset, $asetDetail, Request $request)
     {
-        //
+        $asetdetail = AsetDetail::findOrFail($asetDetail);
+        $asetdetail->update([
+            'aset_id' => $aset,
+            'namaAset' => $request->namaAset,
+            'detailAset' => $request->detailAset,
+            'jenisAset' => $request->jenisAset,
+            'klasifikasiAset' => $request->klasifikasiAset,
+            'masaRetensi' => $request->masaRetensi,
+            'tglPembelian' => $request->tanggal,
+            'jumlah' => $request->jumlah, 
+            'image' => $request->image,
+            'status' => "Tersedia",
+        ]);
+
+        return redirect()->route('detailaset.index', $aset);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AsetDetail $asetDetail)
-    {
-        //
-    }
+    public function delete($aset, $asetDetail)
+{
+    $asetdetail = AsetDetail::findOrFail($asetDetail);
+    $asetdetail->delete();
+
+    return redirect()->route('detailaset.index', $aset);
+}
 }

@@ -48,12 +48,12 @@ class DataAsetController extends Controller
             'kodeAset' => $kodeAset,
             'namaAset' => $request->aset,
             'detailAset' => $request->detailAset,
-            'jenisAset' => $request->jenis_aset,
-            'klasifikasiAset' => $request->klasifikasi_aset,
+            'jenisAset' => $request->jenisAset,
+            'klasifikasiAset' => $request->klasifikasiAset,
             'asetValuation' => "0",
-            'ciaLevel' => $request->cia_level,
-            'nilaiRisiko' => $request->nilai_risiko,
-            'masaRetensi' => $request->masa_retensi
+            'ciaLevel' => $request->ciaLevel,
+            'nilaiRisiko' => $request->nilaiRisiko,
+            'masaRetensi' => $request->masaRetensi
         ]);
 
         $dataAset->save();
@@ -88,7 +88,7 @@ class DataAsetController extends Controller
     {
         $aset = Aset::findOrFail($id);
         $aset->update([
-            'namaAset' => $request->namaAset,
+            'namaAset' => $request->aset,
             'detailAset' => $request->detailAset,
             'jenisAset' => $request->jenisAset,
             'klasifikasiAset' => $request->klasifikasiAset,

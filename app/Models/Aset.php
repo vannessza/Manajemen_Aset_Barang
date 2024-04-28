@@ -17,4 +17,7 @@ class Aset extends Model
     public function Peminjaman(){
         return $this->hasMany(Peminjaman::class);
     }
+    public function Pengembalian(){
+        return $this->hasMany(Pengembalian::class);
+    }
 }

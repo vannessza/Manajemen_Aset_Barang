@@ -132,21 +132,6 @@
     }
 </script>
 <script>
-    function incrementNilaiRisiko() {
-        var value = parseInt(document.getElementById('nilaiRisiko').value, 10);
-        value = isNaN(value) ? 0 : value;
-        value++;
-        document.getElementById('nilaiRisiko').value = value;
-    }
-
-    function decrementNilaiRisiko() {
-        var value = parseInt(document.getElementById('nilaiRisiko').value, 10);
-        value = isNaN(value) ? 0 : value;
-        value--;
-        if (value < 1) value = 1;
-        document.getElementById('nilaiRisiko').value = value;
-    }
-
     function incrementMasaRetensi() {
         var value = parseInt(document.getElementById('masaRetensi').value, 10);
         value = isNaN(value) ? 0 : value;
@@ -160,6 +145,20 @@
         value--;
         if (value < 1) value = 1;
         document.getElementById('masaRetensi').value = value;
+    }
+    function incrementNilaiRisiko() {
+        var value = parseInt(document.getElementById('nilaiRisiko').value, 10);
+        value = isNaN(value) ? 0 : value;
+        value++;
+        document.getElementById('nilaiRisiko').value = value;
+    }
+
+    function decrementNilaiRisiko() {
+        var value = parseInt(document.getElementById('nilaiRisiko').value, 10);
+        value = isNaN(value) ? 0 : value;
+        value--;
+        if (value < 1) value = 1;
+        document.getElementById('nilaiRisiko').value = value;
     }
 </script>
 
