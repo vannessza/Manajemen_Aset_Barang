@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penghancuran;
+use App\Models\User;
+use App\Models\Aset;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PenghancuranController extends Controller
 {
@@ -11,8 +14,13 @@ class PenghancuranController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
+    {   
+        $user = Auth::user();
+        $penghancuran = Penghancuran::all();
+
+        return view('dashboard.transaksi.penghancuran.index', compact('penghancuran', 'user'), [
+            'title' => 'Penghancuran'
+        ]);
     }
 
     /**
@@ -20,7 +28,12 @@ class PenghancuranController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+        $aset = Aset::with('AsetDetail')->get();
+
+        return view('dashboard.transaksi.penghancuran.penghancurancreate', compact('user', 'aset'),[
+            'title' => 'Create Penghancuran'
+        ]);
     }
 
     /**
@@ -28,7 +41,23 @@ class PenghancuranController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = Auth::user();
+        
+        $status = $request->image ? "Disetujui" : "Diproses";
+
+        $dataPengembalian = Penghancuran::create([
+            'aset_id' => $request->aset,
+            'nama_aset_id' => $request->namaAset,
+            'tipePemusnahan' => $request->tipePemusnahan,
+            'tglPemusnahan' => $request->tglPemusnahan,
+            'status' => $status,
+            'pemohon' => $user->id,
+            'keterangan' => "Sedang diproses",
+        ]);
+
+        $dataPengembalian->save();
+
+        return redirect(route('penghancuran.index'));
     }
 
     /**
@@ -58,8 +87,12 @@ class PenghancuranController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Penghancuran $penghancuran)
+    public function delete($id)
     {
-        //
+        $penghancuran = Penghancuran::findOrFail($id);
+
+        $penghancuran->delete();
+
+        return redirect(route('penghancuran.index'));
     }
 }

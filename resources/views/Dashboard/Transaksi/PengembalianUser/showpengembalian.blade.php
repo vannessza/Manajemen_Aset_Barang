@@ -41,12 +41,6 @@
                     text-red-600 font-semibold
                 @endif">{{ $pengembalian->status}}</p>
             </div>
-            <div class="mt-2 flex">
-                <p class="w-60">Formulir</p>
-                <a href="" class="bg-[#008d8d] hover:bg-[#006c6c] text-white font-bold py-1 px-2 rounded">
-                    Download Formulir
-                </a>
-            </div>
             <div class="mt-4">
                 <h1 class="font-semibold text-gray-900">Keterangan</h1>
                 <p class="text-sm">{{ $pengembalian->keterangan }}</p>

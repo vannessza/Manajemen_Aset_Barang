@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Aset;
 use App\Models\AsetDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PeminjamanController extends Controller
 {
@@ -17,12 +18,23 @@ class PeminjamanController extends Controller
     public function index()
     {
         $peminjaman = Peminjaman::all();
-
-        return view('dashboard.transaksi.peminjaman.index', compact('peminjaman'), [
+        $peminjamanDiterima = $peminjaman->filter(function ($peminjaman) {
+            return $peminjaman->status === 'Diterima';
+        });
+        return view('dashboard.transaksi.peminjaman.index', [
+            'peminjaman' => $peminjamanDiterima,
             'title' => 'Peminjaman'
         ]);
     }
-
+    public function indexUser(){
+        $user = Auth::user();
+        $peminjaman = $user->peminjaman;
+    
+        return view('dashboard.transaksi.peminjamanuser.index', compact('peminjaman'), [
+            'title' => 'Peminjaman'
+        ]);
+    }
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -38,7 +50,8 @@ class PeminjamanController extends Controller
     }
     public function createpinjamuser($id){
         $asetDetail = AsetDetail::findOrFail($id);
-        return view('dashboard.kelolaaset.aset.pinjamcreate', compact('asetDetail'), [
+        $lokasi = Lokasi::all();
+        return view('dashboard.kelolaaset.aset.pinjamcreate', compact('asetDetail', 'lokasi'), [
             'title' => 'Aset Detail'
         ]);
     }
@@ -64,7 +77,7 @@ class PeminjamanController extends Controller
 
         $kodePeminjaman = $nomerUrut . '/' . $aset->kodeAset . '/' . $divisi . '/' . $lokasi->kodeLokasi;
 
-        $status = $request->image ? "Diterima" : "Progress";
+        $status = $request->image ? "Diterima" : "Diproses";
 
         $dataPeminjaman = Peminjaman::create([
             'user_id' => $request->namaPeminjam,
@@ -83,6 +96,22 @@ class PeminjamanController extends Controller
         return redirect(route('peminjaman.index'));
     }
 
+    public function storepinjamuser($id, Request $request){
+        $asetDetail = AsetDetail::findOrFail($id);
+        $user = Auth::user();
+        
+        $dataPeminjaman = Peminjaman::create([
+            'user_id' => $user->id,
+            'aset_id' => $asetDetail->aset->id,
+            'nama_aset_id' => $asetDetail->id,
+            'tglPeminjaman' => $request->tglPeminjaman,
+            'status' => "Diproses",
+            'lokasi_id' => $request->lokasi,
+            'keterangan' => "Sedang diproses",
+        ]);
+        return redirect(route('peminjaman.index.user'));
+    }
+
     /**
      * Display the specified resource.
      */
@@ -91,7 +120,13 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::findOrFail($id);
 
         return view('dashboard.transaksi.peminjaman.showpeminjaman', compact('peminjaman'), [
-            'title' => 'Peminjaman'
+            'title' => 'Detail Peminjaman'
+        ]);
+    }
+    public function showuser($id){
+        $peminjaman = Peminjaman::findOrFail($id);
+        return view('dashboard.transaksi.peminjamanUser.showpeminjaman', compact('peminjaman'), [
+            'title' => 'Detail Peminjaman'
         ]);
     }
 
@@ -132,7 +167,7 @@ class PeminjamanController extends Controller
 
         $kodePeminjaman = $nomerUrut . '/' . $aset->kodeAset . '/' . $divisi . '/' . $lokasi->kodeLokasi;
 
-        $status = $request->image ? "Diterima" : "Progress";
+        $status = $request->image ? "Diterima" : "Diproses";
 
         $peminjaman->update([
             'user_id' => $request->namaPeminjam,

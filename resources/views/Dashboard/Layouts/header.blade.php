@@ -51,10 +51,10 @@ items-center z-10 h-[100px]">
                         </button>
                         <div id="dropdown-menu2" class="lg:absolute bg-white  rounded-b-md ml-4 p-4 shadow-xl w-[285px] lg:w-40 hidden">
                             <ul class="space-y-2">
-                                <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Request</a></li>
+                                <li><a href="{{ route('request.index')}}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Request</a></li>
                                 <li><a href="{{ route('peminjaman.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Peminjaman</a></li>
                                 <li><a href="{{ route('pengembalian.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Pengembalian</a></li>
-                                <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Penghancuran</a></li>
+                                <li><a href="{{ route('penghancuran.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Penghancuran</a></li>
                             </ul>
                         </div>
                     </li>

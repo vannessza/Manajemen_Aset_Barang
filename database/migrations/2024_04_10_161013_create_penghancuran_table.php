@@ -13,18 +13,21 @@ return new class extends Migration
     {
         Schema::create('penghancuran', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('aset_id')->unique();
-            $table->unsignedBigInteger('nama_aset_id')->unique();
+            $table->unsignedBigInteger('aset_id');
+            $table->unsignedBigInteger('nama_aset_id');
             $table->string("tipePemusnahan");
             $table->string("tglPemusnahan");
-            $table->string("pengesahan");
-            $table->string("pemohon");
+            $table->unsignedBigInteger("pengesahan")->nullable();
+            $table->unsignedBigInteger("pemohon");
             $table->string("status");
+            $table->string("keterangan");
             $table->string("image")->nullable();
             $table->timestamps();
 
             $table->foreign('aset_id')->references('id')->on('aset')->onDelete('cascade');
             $table->foreign('nama_aset_id')->references('id')->on('aset_detail')->onDelete('cascade');
+            $table->foreign('pemohon')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('pengesahan')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

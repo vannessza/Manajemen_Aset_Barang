@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('aset_id');
             $table->unsignedBigInteger('nama_aset_id');
-            $table->string("kodePeminjaman");
+            $table->string("kodePeminjaman")->nullable();
             $table->string("tglPeminjaman");
             $table->string("status");
             $table->unsignedBigInteger("lokasi_id");

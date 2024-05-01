@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('pengembalian', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->unsignedBigInteger('aset_id')->unique();
-            $table->unsignedBigInteger('nama_aset_id')->unique();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('aset_id');
+            $table->unsignedBigInteger('nama_aset_id');
             $table->string("kodePengembalian");
             $table->string("tglPengembalian");
             $table->string("status");

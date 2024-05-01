@@ -10,6 +10,7 @@ use App\Models\Aset;
 use App\Models\Lokasi;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
+use Illuminate\Support\Facades\Auth;
 
 class PengembalianController extends Controller
 {
@@ -21,6 +22,15 @@ class PengembalianController extends Controller
         $pengembalian = Pengembalian::all();
 
         return view('dashboard.transaksi.pengembalian.index', compact('pengembalian'), [
+            'title' => 'Pengembalian'
+        ]);
+    }
+
+    public function indexuser(){
+        $user = Auth::user();
+        $pengembalian = $user->pengembalian;
+    
+        return view('dashboard.transaksi.pengembalianuser.index', compact('pengembalian'), [
             'title' => 'Pengembalian'
         ]);
     }
@@ -39,6 +49,17 @@ class PengembalianController extends Controller
             'title' => 'Create Pengembalian'
         ]);
     }
+
+    public function createuser()
+    {
+        $user = Auth::user();
+        $peminjaman = $user->peminjaman;
+
+        return view('dashboard.transaksi.pengembalianuser.pengembaliancreate', compact('user', 'peminjaman'), [
+            'title' => 'Create Pengembalian'
+        ]);
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -61,7 +82,7 @@ class PengembalianController extends Controller
 
         $kodePengembalian = $nomerUrut . '/' . $aset->kodeAset . '/' . $divisi . '/' . $lokasi->kodeLokasi;
 
-        $status = $request->image ? "Diterima" : "Progress";
+        $status = $request->image ? "Diterima" : "Diproses";
 
         $dataPengembalian = Pengembalian::create([
             'user_id' => $request->namaPengembali,
@@ -80,6 +101,23 @@ class PengembalianController extends Controller
         return redirect(route('pengembalian.index'));
     }
 
+    public function storeuser(Request $request){
+        $peminjaman = Peminjaman::findOrFail($request->namaAset);
+
+        $dataPengembalian = Pengembalian::create([
+            'user_id' => $peminjaman->user_id,
+            'aset_id' => $peminjaman->aset_id,
+            'nama_aset_id' => $peminjaman->nama_aset_id,
+            'kodePengembalian' => $peminjaman->kodePeminjaman,
+            'tglPengembalian' => $request->tglPengembalian,
+            'status' => "Diproses",
+            'lokasi_id' => $peminjaman->lokasi_id,
+            'keterangan' => "Sedang diproses"
+        ]);
+
+        return redirect(route('pengembalian.index.user'));
+    }
+
     /**
      * Display the specified resource.
      */
@@ -90,6 +128,14 @@ class PengembalianController extends Controller
         return view('dashboard.transaksi.pengembalian.showpengembalian', compact('pengembalian'), [
             'title' => 'Pengembalian'
         ]);
+    }
+
+    public function showuser($id){
+        $pengembalian = Pengembalian::findOrFail($id);
+
+        return view('dashboard.transaksi.pengembalianuser.showpengembalian', compact('pengembalian'), [
+            'title' => 'Pengembalian'
+        ]);   
     }
 
     /**

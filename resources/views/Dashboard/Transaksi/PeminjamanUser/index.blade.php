@@ -6,12 +6,11 @@
     <div class="bg-white w-auto rounded-xl shadow-xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-xl font-bold text-gray-800">Pengembalian</h1>
+            <h1 class="text-xl font-bold text-gray-800">Peminjaman</h1>
             <p class="font-sans text-sm text-slate-400">Create/Detail/Edit/Delete</p>
           </div>
-            <a href="{{ route('penghancuran.create') }}" class="bg-[#00C74F] text-white py-2 px-4 rounded-md shadow-xl">Tambah</a>
         </div>
-        @if(count($penghancuran) > 0)
+        @if(count($peminjaman) > 0)
         <div class="flex flex-col mt-10">
             <div class="-m-1.5 overflow-x-auto">
               <div class="p-1.5 min-w-full inline-block align-middle">
@@ -33,38 +32,35 @@
                       <thead class="bg-gray-50">
                         <tr>
                           <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">No</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Nama Aset</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Kode Peminjaman</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Nama</th>
                           <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Aset</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Tipe Pemusnahan</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Tanggal Pemusnahan</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Pemohon</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">status</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Tanggal Peminjaman</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Status</th>
                           <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Action</th>
                         </tr>
                       </thead>
                       <tbody class="divide-y divide-gray-200">
                         
                         @php ($i = 0)
-                        @foreach ($penghancuran as $pe)
+                        @foreach ($peminjaman as $pe)
                         @php($i++)
                         <tr>
                           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $i }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->asetDetail->namaAset}}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->aset->namaAset}}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tipePemusnahan }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPemusnahan }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->user->name }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm
-                           @if ($pe->status === 'Diterima')
-                            text-green-600 font-semibold
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->kodePeminjaman ? $pe->kodePeminjaman : 'XXXX/XXX/XXX/XX' }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->asetdetail->namaAset }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->aset->namaAset }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPeminjaman }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm 
+                            @if ($pe->status === 'Diterima')
+                                text-green-600 font-semibold
                             @elseif($pe->status === 'Diproses')
                                 text-yellow-600 font-semibold
                             @elseif($pe->status === 'Ditolak')
                                 text-red-600 font-semibold
                             @endif">{{ $pe->status }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                            <a href="{{ route('penghancuran.show', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
-                            <a href="{{ route('penghancuran.delete', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-500 hover:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</a>
+                            <a href="{{ route('peminjaman.show.user', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
                           </td>
                         </tr>
                         @endforeach
