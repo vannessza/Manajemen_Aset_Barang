@@ -47,7 +47,7 @@ class PenghancuranController extends Controller
 
         $dataPengembalian = Penghancuran::create([
             'aset_id' => $request->aset,
-            'nama_aset_id' => $request->namaAset,
+            'nama_aset' => $request->namaAset,
             'tipePemusnahan' => $request->tipePemusnahan,
             'tglPemusnahan' => $request->tglPemusnahan,
             'status' => $status,
@@ -63,9 +63,13 @@ class PenghancuranController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Penghancuran $penghancuran)
+    public function show($id)
     {
-        //
+        $penghancuran = Penghancuran::findOrFail($id);
+
+        return view('dashboard.transaksi.penghancuran.showpenghancuran', compact('penghancuran'), [
+            'title' => 'Detail Penghancuran'
+        ]);
     }
 
     /**

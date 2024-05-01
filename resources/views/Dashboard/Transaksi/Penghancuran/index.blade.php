@@ -6,7 +6,7 @@
     <div class="bg-white w-auto rounded-xl shadow-xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-xl font-bold text-gray-800">Pengembalian</h1>
+            <h1 class="text-xl font-bold text-gray-800">Penghancuran</h1>
             <p class="font-sans text-sm text-slate-400">Create/Detail/Edit/Delete</p>
           </div>
             <a href="{{ route('penghancuran.create') }}" class="bg-[#00C74F] text-white py-2 px-4 rounded-md shadow-xl">Tambah</a>
@@ -49,13 +49,13 @@
                         @php($i++)
                         <tr>
                           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $i }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->asetDetail->namaAset}}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->nama_aset}}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->aset->namaAset}}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tipePemusnahan }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPemusnahan }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->user->name }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm
-                           @if ($pe->status === 'Diterima')
+                           @if ($pe->status === 'Disetujui')
                             text-green-600 font-semibold
                             @elseif($pe->status === 'Diproses')
                                 text-yellow-600 font-semibold

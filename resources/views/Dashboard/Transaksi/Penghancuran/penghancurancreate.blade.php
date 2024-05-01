@@ -10,7 +10,7 @@
             </a>
            
             <div class="m-auto">
-                <h1 class="text-lg font-semibold text-gray-900">Peminjaman</h1>
+                <h1 class="text-lg font-semibold text-gray-900">Penghancuran</h1>
             </div>
             
         </div>
@@ -67,7 +67,7 @@
             if ({{ $as->id }} == selectedAsetId) {
                 @foreach ($as->asetDetail as $detail)
                     var option = document.createElement('option');
-                    option.value = "{{ $detail->id }}";
+                    option.value = "{{ $detail->namaAset }}";
                     option.text = "{{ $detail->namaAset }}";
                     namaAsetDropdown.add(option);
                 @endforeach

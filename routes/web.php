@@ -8,6 +8,8 @@ use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\PengembalianController;
 use App\Http\Controllers\PenghancuranController;
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['guest'])->group(function(){
@@ -84,5 +86,21 @@ Route::patch('/request/terima penghancuran/update/{id}', [RequestController::cla
 Route::get('/request/tolak penghancuran/{id}', [RequestController::class, 'tolakpenghancuran'])->name('request.tolak.penghancuran');
 Route::patch('/request/tolak penghancuran/update/{id}', [RequestController::class, 'tolakpenghancuranupdate'])->name('request.update.tolak.penghancuran');
 Route::get('/request/penghancuran/show/{id}', [RequestController::class, 'showpenghancuran'])->name('request.show.penghancuran');
+//user
+Route::get('/user', [UserController::class, 'index'])->name('user.index');
+Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
+Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+Route::patch('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
+Route::get('/user/show/{id}', [UserController::class, 'show'])->name('user.show');
+Route::get('/user/delete/{id}', [UserController::class, 'delete'])->name('user.delete');
+//admin
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
+Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
+Route::get('/admin/edit/{id}', [AdminController::class, 'edit'])->name('admin.edit');
+Route::patch('/admin/update/{id}', [AdminController::class, 'update'])->name('admin.update');
+Route::get('/admin/show/{id}', [AdminController::class, 'show'])->name('admin.show');
+Route::get('/admin/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
 //logout
 Route::post('/logout', [LoginController::class, 'logout']);

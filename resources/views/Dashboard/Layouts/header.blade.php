@@ -67,7 +67,7 @@ items-center z-10 h-[100px]">
                         </button>
                         <div id="dropdown-menu3" class="lg:absolute bg-white  rounded-b-md ml-4 p-4 shadow-xl w-[285px] lg:w-40 hidden">
                             <ul class="space-y-2">
-                                <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">User</a></li>
+                                <li><a href="{{ route('user.index') }}" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">User</a></li>
                                 <li><a href="" class="flex p-2 font-medium rounded-md hover:text-[#008d8d]">Admin</a></li>
                             </ul>
                         </div>

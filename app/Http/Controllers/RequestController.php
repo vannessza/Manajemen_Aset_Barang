@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Aset;
 use App\Models\AsetDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class RequestController extends Controller
@@ -67,6 +68,15 @@ class RequestController extends Controller
         ]);
     }
 
+    public function terimapenghancuran($id)
+    {
+        $penghancuran = Penghancuran::findOrFail($id);
+
+        return view('dashboard.transaksi.request.terimapenghancuran', compact('penghancuran'),[
+            'title' => 'Terima'
+        ]);
+    }
+
     public function tolakpeminjaman($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
@@ -80,6 +90,14 @@ class RequestController extends Controller
         $pengembalian = Pengembalian::findOrFail($id);
 
         return view('dashboard.transaksi.request.tolakpengembalian', compact('pengembalian'), [
+            'title' => 'Tolak'
+        ]);
+    }
+    public function tolakpenghancuran($id)
+    {
+        $penghancuran = Penghancuran::findOrFail($id);
+
+        return view('dashboard.transaksi.request.tolakpenghancuran', compact('penghancuran'), [
             'title' => 'Tolak'
         ]);
     }
@@ -134,44 +152,74 @@ class RequestController extends Controller
     }
 
     public function terimapengembaliannupdate(Request $request, $id)
-{
-    // Validasi input
-    $request->validate([
-        'keterangan' => 'required|string',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
-    ]);
+    {
+        // Validasi input
+        $request->validate([
+            'keterangan' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
+        ]);
 
-    $pengembalian = Pengembalian::findOrFail($id);
+        $pengembalian = Pengembalian::findOrFail($id);
 
-    // Menentukan status berdasarkan apakah ada gambar atau tidak
-    $status = $request->hasFile('image') ? "Dikembalikan" : "Diproses";
+        // Menentukan status berdasarkan apakah ada gambar atau tidak
+        $status = $request->hasFile('image') ? "Dikembalikan" : "Diproses";
 
-    // Jika ada file gambar di-upload, simpan gambar tersebut
-    $imagePath = $pengembalian->image;
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('pengembalian');
+        // Jika ada file gambar di-upload, simpan gambar tersebut
+        $imagePath = $pengembalian->image;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('pengembalian');
 
-        // Hapus gambar lama jika ada
-        if ($pengembalian->image) {
-            Storage::delete($pengembalian->image);
+            // Hapus gambar lama jika ada
+            if ($pengembalian->image) {
+                Storage::delete($pengembalian->image);
+            }
         }
+
+        // Memperbarui data pengembalian
+        $pengembalian->update([
+            'keterangan' => $request->keterangan,
+            'image' => $imagePath,
+            'status' => $status,
+        ]);
+
+        // Menghapus peminjaman berdasarkan  kode peminjaman
+        Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->delete();
+
+        // Redirect ke halaman indeks permintaan
+        return redirect(route('request.index'));
     }
 
-    // Memperbarui data pengembalian
-    $pengembalian->update([
-        'keterangan' => $request->keterangan,
-        'image' => $imagePath,
-        'status' => $status,
-    ]);
+    public function terimapenghancuranupdate(Request $request, $id){
+        $penghancuran = Penghancuran::findOrFail($id);
+        $user = Auth::user();
+        // Menentukan status berdasarkan apakah ada gambar atau tidak
+        $status = $request->hasFile('image') ? "Disetujui" : "Diproses";
 
-     // Menghapus peminjaman berdasarkan  kode peminjaman
-     Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->delete();
+        // Jika ada file gambar di-upload, simpan gambar tersebut
+        $imagePath = $penghancuran->image;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('penghancuran');
 
-    // Redirect ke halaman indeks permintaan
-    return redirect(route('request.index'));
-}
+            // Hapus gambar lama jika ada
+            if ($penghancuran->image) {
+                Storage::delete($penghancuran->image);
+            }
+        }
 
+        // Memperbarui data pengembalian
+        $penghancuran->update([
+            'pengesahab' => $user,
+            'keterangan' => $request->keterangan,
+            'image' => $imagePath,
+            'status' => $status,
+        ]);
 
+        // Menghapus peminjaman berdasarkan  kode peminjaman
+        AsetDetail::where('namaAset', $penghancuran->nama_aset)->delete();
+
+        // Redirect ke halaman indeks permintaan
+        return redirect(route('request.index'));
+    }
 
 
     public function tolakpeminjamanupdate(Request $request, $id) {
@@ -194,6 +242,19 @@ class RequestController extends Controller
     
         // Memperbarui peminjaman dengan data yang diperoleh dari request
         $pengembalian->update([
+            'keterangan' => $request->keterangan,
+            'status' => "Ditolak"
+        ]);
+    
+        // Redirect ke halaman indeks permintaan
+        return redirect(route('request.index'));
+    }
+    public function tolakpenghancuranupdate(Request $request, $id) {
+        // Mencari peminjaman berdasarkan ID
+        $penghancuran = Penghancuran::findOrFail($id);
+    
+        // Memperbarui peminjaman dengan data yang diperoleh dari request
+        $penghancuran->update([
             'keterangan' => $request->keterangan,
             'status' => "Ditolak"
         ]);
@@ -229,6 +290,15 @@ class RequestController extends Controller
 
         return view('dashboard.transaksi.request.showpengembalian', compact('pengembalian'), [
             'title' => 'Detail Peminjaman'
+        ]);
+    }
+
+    public function showpenghancuran($id)
+    {
+        $penghancuran = Penghancuran::findOrFail($id);
+
+        return view('dashboard.transaksi.request.showpenghancuran', compact('penghancuran'), [
+            'title' => 'Detail Penghancuran'
         ]);
     }
 

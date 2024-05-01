@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('penghancuran', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('aset_id');
-            $table->unsignedBigInteger('nama_aset_id');
+            $table->string('nama_aset');
             $table->string("tipePemusnahan");
             $table->string("tglPemusnahan");
             $table->unsignedBigInteger("pengesahan")->nullable();
@@ -25,7 +25,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('aset_id')->references('id')->on('aset')->onDelete('cascade');
-            $table->foreign('nama_aset_id')->references('id')->on('aset_detail')->onDelete('cascade');
             $table->foreign('pemohon')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('pengesahan')->references('id')->on('users')->onDelete('cascade');
         });

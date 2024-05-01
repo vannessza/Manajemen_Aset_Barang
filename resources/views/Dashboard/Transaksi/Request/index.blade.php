@@ -121,11 +121,12 @@
                       <thead class="bg-gray-50">
                         <tr>
                           <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">No</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Kode Peminjaman</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Nama</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Nama Aset</th>
                           <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Aset</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Tanggal Pengembalian</th>
-                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Status</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Tipe Pemusnahan</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Tanggal Pemusnahan</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Pemohon</th>
+                          <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">status</th>
                           <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Action</th>
                         </tr>
                       </thead>
@@ -133,13 +134,14 @@
                         @php ($i = 0)
                         @foreach ($penghancuran as $pe)
                         @php($i++)
-                        @if(count($pengembalian) > 0)
+                        @if(count($penghancuran) > 0)
                         <tr>
                           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $i }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->kodePengembalian}}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->user->name }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->nama_aset}}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->aset->namaAset }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPengembalian }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tipePemusnahan }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPemusnahan }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->user->name }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm  @if ($pe->status === 'Diterima')
                             text-green-600 font-semibold
                             @elseif($pe->status === 'Diproses')
