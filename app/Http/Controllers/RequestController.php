@@ -114,9 +114,6 @@ class RequestController extends Controller
         $divisi = User::findOrFail($peminjaman->user_id)->profile->divisi->kodeDivisi;
         $lokasi = Lokasi::findOrFail($peminjaman->lokasi_id);
 
-        // Membuat kode peminjaman dengan format yang diminta
-        $kodePeminjaman = $nomerUrutBarang . '/' . $aset->kodeAset . '/' . $divisi . '/' . $lokasi->kodeLokasi;
-
         // Menentukan status berdasarkan apakah ada gambar atau tidak
         $status = $request->hasFile('image') ? "Diterima" : "Diproses";
 
@@ -126,7 +123,7 @@ class RequestController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
 
-        // Jika ada file gambar di-upload, simpan gambar tersebut
+        // Jika ada file gambar di-upload, simpan gambar tersebut dan perbarui kode peminjaman
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada
             if ($peminjaman->image) {
@@ -134,9 +131,14 @@ class RequestController extends Controller
             }
 
             // Simpan gambar baru
-            $imagePath = $request->file('image')->store('peminjaman');
+            $imagePath = $request->file('image')->store('peminjaman-images');
+
+            // Membuat kode peminjaman dengan format yang diminta
+            $kodePeminjaman = $nomerUrutBarang . '/' . $aset->kodeAset . '/' . $divisi . '/' . $lokasi->kodeLokasi;
         } else {
+            // Jika tidak ada gambar yang diunggah, gunakan kode peminjaman yang sudah ada
             $imagePath = $peminjaman->image;
+            $kodePeminjaman = $peminjaman->kodePeminjaman;
         }
 
         // Memperbarui data peminjaman
@@ -150,6 +152,7 @@ class RequestController extends Controller
         // Redirect ke halaman indeks permintaan
         return redirect(route('request.index'));
     }
+
 
     public function terimapengembaliannupdate(Request $request, $id)
     {

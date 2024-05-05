@@ -52,7 +52,13 @@
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->user->name }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->aset->namaAset }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->tglPeminjaman }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $pe->status }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm @if ($pe->status === 'Diterima')
+                            text-green-600 font-semibold
+                        @elseif($pe->status === 'Diproses')
+                            text-yellow-600 font-semibold
+                        @elseif($pe->status === 'Ditolak')
+                            text-red-600 font-semibold
+                        @endif">{{ $pe->status }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                             <a href="{{ route('Peminjaman.show', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
                             <a href="{{ route('peminjaman.edit', $pe->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>

@@ -16,6 +16,6 @@ class UserProfile extends Model
         return $this->belongsTo(User::class);
     }
     public function divisi(){
-        return $this->belongsTo(Divisi::class);
+        return $this->belongsTo(Divisi::class, 'divisi_id');
     }
 }

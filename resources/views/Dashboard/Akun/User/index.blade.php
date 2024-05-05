@@ -53,7 +53,7 @@
                   <th scope="col" class="px-6 py-3 text-start">
                     <div class="flex items-center gap-x-2">
                       <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                        Name
+                        Nama
                       </span>
                     </div>
                   </th>
@@ -61,7 +61,7 @@
                   <th scope="col" class="px-6 py-3 text-start">
                     <div class="flex items-center gap-x-2">
                       <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                        Position
+                        Divisi
                       </span>
                     </div>
                   </th>
@@ -69,7 +69,7 @@
                   <th scope="col" class="px-6 py-3 text-start">
                     <div class="flex items-center gap-x-2">
                       <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                        Status
+                        Role
                       </span>
                     </div>
                   </th>
@@ -77,7 +77,7 @@
                   <th scope="col" class="px-6 py-3 text-start">
                     <div class="flex items-center gap-x-2">
                       <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                        Portfolio
+                        Aset
                       </span>
                     </div>
                   </th>
@@ -93,59 +93,66 @@
                   <th scope="col" class="px-6 py-3 text-end"></th>
                 </tr>
               </thead>
-  
+              
               <tbody class="divide-y divide-gray-200">
+                @php ($i = 0)
+                @foreach ($user as $us)
+                @php($i++)
                 <tr>
                   <td class="whitespace-nowrap">
                     <div class="px-6 py-3">
-                      <div class="flex items-center gap-x-3">
-                        <img class="inline-block h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1531927557220-a9e23c1e4794?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80" alt="Image Description">
-                        <div class="grow">
-                          <span class="block text-sm font-semibold text-gray-800">Christina Bersh</span>
-                          <span class="block text-sm text-gray-500">christina@site.com</span>
+                        <div class="flex items-center gap-x-3">
+                            @if ($us->profile->image)
+                                <img src="{{ asset('storage/'. $us->profile->image) }}" alt="User Image" class="inline-block h-10 w-10 rounded-full">
+                            @else
+                                <img src="{{ asset('image/icon/User.png') }}" alt="Default Image" class="inline-block h-10 w-10 rounded-full">
+                            @endif
+                            <div class="grow">
+                                <span class="block text-sm font-semibold text-gray-800">{{ $us->name }}</span>
+                                <span class="block text-sm text-gray-500">{{ $us->email }}</span>
+                            </div>
                         </div>
-                      </div>
+                    </div>
+                </td>                
+                  <td class="whitespace-nowrap">
+                    <div class="px-6 py-3">
+                      <span class="block text-sm font-semibold text-gray-800">{{ $us->profile->divisi->kodeDivisi }}</span>
+                      <span class="block text-sm text-gray-500">{{ $us->profile->divisi->namaDivisi }}</span>
                     </div>
                   </td>
                   <td class="whitespace-nowrap">
                     <div class="px-6 py-3">
-                      <span class="block text-sm font-semibold text-gray-800">Director</span>
-                      <span class="block text-sm text-gray-500">Human resources</span>
+                        <span class="py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">
+                            {{ $us->role }}
+                        </span>
                     </div>
-                  </td>
+                </td>
+                <td class="whitespace-nowrap">
+                  <div class="px-6 py-3">
+                    <span class="text-sm text-gray-500" style="max-width: 150px;">{{ $jumlahPeminjaman[$us->id] }}</span>
+                  </div>
+                </td>
+                
                   <td class="whitespace-nowrap">
                     <div class="px-6 py-3">
-                      <span class="py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">
-                        <svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                        </svg>
-                        Active
-                      </span>
-                    </div>
-                  </td>
-                  <td class="whitespace-nowrap">
-                    <div class="px-6 py-3">
-                      <div class="flex items-center gap-x-3">
-                        <span class="text-xs text-gray-500">1/5</span>
-                        <div class="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                          <div class="flex flex-col justify-center overflow-hidden bg-gray-800" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="whitespace-nowrap">
-                    <div class="px-6 py-3">
-                      <span class="text-sm text-gray-500">28 Dec, 12:12</span>
+                      <span class="text-sm text-gray-500">{{ $us->created_at }}</span>
                     </div>
                   </td>
                   <td class="whitespace-nowrap">
                     <div class="px-6 py-1.5">
-                      <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="#">
+                      <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('user.show.daftaraset', $us->id) }}">
+                        Detail
+                      </a>
+                      <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('user.edit', $us->id) }}">
                         Edit
+                      </a>
+                      <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('user.delete', $us->id) }}">
+                        Delete
                       </a>
                     </div>
                   </td>
                 </tr>
+                @endforeach
               </tbody>
             </table>
             <!-- End Table -->
@@ -180,4 +187,5 @@
     <!-- End Card -->
   </div>
   <!-- End Table Section -->
+  
   @endsection

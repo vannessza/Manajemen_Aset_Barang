@@ -93,7 +93,17 @@ Route::post('/user/store', [UserController::class, 'store'])->name('user.store')
 Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
 Route::patch('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
 Route::get('/user/show/{id}', [UserController::class, 'show'])->name('user.show');
+Route::get('/user/show/daftar aset/{id}', [UserController::class, 'daftaraset'])->name('user.show.daftaraset');
+Route::get('/user/show/daftar aset/tambah aset/{id}', [UserController::class, 'tambahaset'])->name('user.show.tambahaset.create');
+Route::post('/user/show/daftar aset/tambah aset/store/{id}', [UserController::class, 'tambahasetstore'])->name('user.show.tambahaset.store');
+Route::get('/user/show/daftar aset/show/{user_id}/{peminjaman_id}', [UserController::class, 'daftarasetshow'])->name('user.show.daftaraset.show');
+Route::get('/user/show/daftar aset/show/word export/{user_id}/{peminjaman_id}', [UserController::class, 'exportformulir'])->name('user.show.daftaraset.exportformulir');
+Route::get('/user/show/daftar aset/show/upload/{user_id}/{peminjaman_id}', [UserController::class, 'uploadformulir'])->name('user.show.daftaraset.uploadformulir');
+Route::get('/user/show/daftar-aset/show/export-bukti-formulir/{user_id}/{peminjaman_id}', [UserController::class, 'exportformulirbukti'])->name('user.show.daftaraset.exportbuktiformulir');
+Route::patch('/user/show/daftar aset/show/upload/update/{user_id}/{peminjaman_id}', [UserController::class, 'uploadformulirupdate'])->name('user.show.daftaraset.uploadformulir.update');
 Route::get('/user/delete/{id}', [UserController::class, 'delete'])->name('user.delete');
+Route::get('/user/edit/password/{id}', [UserController::class, 'editpassword'])->name('password.edit');
+Route::post('/user/edit/ubah password', [UserController::class, 'storepassword'])->name('password.store');
 //admin
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');

@@ -43,7 +43,6 @@
                                 <h1 class="py-3 px-4 text-[20px] bg-[#9BB6FB] text-[#3051FF] mr-8 mt-5">0</h1>
                             </div>
                         </div>
-                    
                     </div>
                 </a>
             </div>
