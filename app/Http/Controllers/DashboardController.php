@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Peminjaman;
+use App\Models\Pengembalian;
+use App\Models\Penghancuran;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -11,8 +16,31 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard.index' ,[
-            'title' => 'Dashboard'
+        $pengguna = Auth::user();
+        $jumlahAdmin = User::where('role', 'admin')->count();
+
+        $jumlahPeminjaman = Peminjaman::count();
+
+        $jumlahPengembalian = Pengembalian::count();
+
+        $jumlahPenghancuran = Penghancuran::count();
+
+        $jumlahPeminjamanProses = Peminjaman::where('status', 'Diproses')->count();
+        $jumlahPengembalianProses = Pengembalian::where('status', 'Diproses')->count();
+        $jumlahPenghancuranProses = Penghancuran::where('status', 'Diproses')->count();
+        $jumlahRequestProses = $jumlahPeminjamanProses + $jumlahPengembalianProses + $jumlahPenghancuranProses;
+
+        $jumlahUser = User::where('role', 'user')->count();
+
+        return view('dashboard.index', [
+            'title' => 'Dashboard',
+            'pengguna' => $pengguna,
+            'jumlahAdmin' => $jumlahAdmin,
+            'jumlahPeminjaman' => $jumlahPeminjaman,
+            'jumlahPengembalian' => $jumlahPengembalian,
+            'jumlahPenghancuran' => $jumlahPenghancuran,
+            'jumlahRequestProses' => $jumlahRequestProses,
+            'jumlahUser' => $jumlahUser
         ]);
     }
 

@@ -1,4 +1,4 @@
-@extends('dashboard.akun.user.showuser')
+@extends('dashboard.akun.admin.showadmin')
 
 @section('user')
 
@@ -11,7 +11,7 @@
           </div>
           <div class="mt-4 md:mt-0">
                 <div class="inline-flex gap-x-2">
-                  <a class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-[#00C74F] text-white hover:bg-green-700 disabled:opacity-50 disabled:pointer-events-none" href="{{ route('user.show.tambahaset.create', $user->id) }}">
+                  <a class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-[#00C74F] text-white hover:bg-green-700 disabled:opacity-50 disabled:pointer-events-none" href="{{ route('admin.show.tambahaset.create', $admin->id) }}">
                     <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     Tambah Aset
                   </a>
@@ -135,10 +135,10 @@
                             @if ($pe->status === 'Diterima')
                             <td class="whitespace-nowrap">
                                 <div class="px-6 py-1.5">
-                                     <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('user.show.daftaraset.show', ['user_id' => $user->id, 'peminjaman_id' => $pe->id]) }}">
+                                     <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('admin.show.daftaraset.show', ['user_id' => $admin->id, 'peminjaman_id' => $pe->id]) }}">
                                         Detail
                                     </a>
-                                    <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="">
+                                    <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('admin.show.daftaraset.pengembalian', ['user_id' => $admin->id, 'peminjaman_id' => $pe->id]) }}">
                                         Pengembalian
                                     </a>
                                 </div>
@@ -146,7 +146,7 @@
                             @else
                             <td class="whitespace-nowrap">
                               <div class="px-6 py-1.5">
-                                <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('user.show.daftaraset.show', ['user_id' => $user->id, 'peminjaman_id' => $pe->id]) }}">
+                                <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium" href="{{ route('admin.show.daftaraset.show', ['user_id' => $admin->id, 'peminjaman_id' => $pe->id]) }}">
                                     Detail
                                </a>
                             </div>

@@ -20,37 +20,65 @@
                     
                     <div class="sm:col-span-2">
                         <label for="nama" class="block mb-2 text-sm font-medium text-gray-90">Nama</label>
-                        <input type="text" name="nama" id="nama" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan nama aset register" required="">
+                        <input type="text" name="nama" id="nama" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan nama" value="{{ old('nama') }}" required="">
+                        @error('nama')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="sm:col-span-2">
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-90">Email</label>
-                        <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan jenis aset register" required="">
+                        <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan Email" value="{{ old('email') }}" required="">
+                        @error('email')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="">
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-90">Password</label>
-                        <input type="password" name="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan jenis aset register" required="">
+                        <input type="password" name="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan Password" required="">
+                        @error('password')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="">
-                        <label for="confirm_password" class="block mb-2 text-sm font-medium text-gray-90">Konfirmasi Password</label>
-                        <input type="password" name="confirm_password" id="confirm_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan jenis aset register" required="">
+                        <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-90">Konfirmasi Password</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan Password lagi" required="">
+                        @error('password_confirmation')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="sm:col-span-2">
                         <label for="divisi" class="block mb-2 text-sm font-medium text-gray-900">Nama Divisi</label>
                         <select id="divisi" name="divisi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
                             <option value="">Pilih Divisi</option>
                             @foreach ($divisi as $di)
-                                <option value="{{ $di->id }}">{{ $di->namaDivisi }}</option>
+                                <option value="{{ $di->id }}" {{ old('divisi') == $di->id ? 'selected' : '' }}>{{ $di->namaDivisi }}</option>
                             @endforeach
                         </select>
+                        @error('divisi')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="sm:col-span-2">
                         <label for="alamat" class="block mb-2 text-sm font-medium text-gray-90">Alamat</label>
-                        <input type="text" name="alamat" id="alamat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan nama aset register" required="">
+                        <input type="text" name="alamat" id="alamat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan alamat" value="{{ old('alamat') }}" required="">
+                        @error('alamat')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="sm:col-span-2">
                         <label for="noTelp" class="block mb-2 text-sm font-medium text-gray-90">No Telp</label>
-                        <input type="text" name="noTelp" id="noTelp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan nama aset register" required="">
+                        <input type="text" name="noTelp" id="noTelp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Masukkan no telp" value="{{ old('noTelp') }}" required="">
+                        @error('noTelp')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
                     </div>
+                    
                     <div class="sm:col-span-2 flex items-center my-auto">
                         <div class="w-1/3 flex mr-4">
                             <img class="img-preview inline-block h-40 w-40 rounded-full object-cover object-center">
@@ -68,10 +96,11 @@
                                     dark:text-neutral-500
                                     dark:file:bg-blue-500
                                     dark:hover:file:bg-blue-400
-                                " onchange ="previewImage()">
+                                " onchange="previewImage()">
                             </label>
                         </div>
-                    </div>                                                                                              
+                    </div>
+                                                                                                                  
                 </div>
                 <button type="submit" class="inline-block w-full rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong" data-twe-ripple-init data-twe-ripple-color="light">
                     Create

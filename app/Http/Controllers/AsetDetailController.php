@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AsetDetail;
 use App\Models\Aset;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AsetDetailController extends Controller
 {
@@ -13,10 +14,12 @@ class AsetDetailController extends Controller
      */
     public function index($id)
     {
+        $pengguna = Auth::user();
         $aset = Aset::findOrFail($id);
         $asetDetail = $aset->AsetDetail()->latest()->first();
         return view('dashboard.kelolaaset.dataaset.detailaset.index', compact('aset', 'asetDetail'), [
-            'title' => 'Aset Detail'
+            'title' => 'Aset Detail',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -25,9 +28,11 @@ class AsetDetailController extends Controller
      */
     public function create($id)
     {
+        $pengguna = Auth::user();
         $aset = Aset::findOrFail($id);
         return view('dashboard.kelolaaset.dataaset.detailaset.detailasetcreate', compact('aset'), [
-            'title' => 'Create Aset'
+            'title' => 'Create Aset',
+            'pengguna' => $pengguna
         ]);
 
         
@@ -69,10 +74,12 @@ class AsetDetailController extends Controller
      */
     public function edit($aset, $asetDetail)
     {
+        $pengguna = Auth::user();
         $aset = Aset::findOrFail($aset);
         $asetDetail = AsetDetail::findOrFail($asetDetail);
         return view('dashboard.kelolaaset.dataaset.detailaset.detailasetedit', compact('aset', 'asetDetail'), [
-            'title' => 'Create Aset'
+            'title' => 'Create Aset',
+            'pengguna' => $pengguna
         ]);
     }
 

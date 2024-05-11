@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aset;
+use App\Models\AsetDetail;
 use App\Models\Divisi;
+use App\Models\History;
 use App\Models\Lokasi;
 use App\Models\Peminjaman;
+use App\Models\Pengembalian;
 use App\Models\User;
 use App\Models\UserProfile;
 use Carbon\Carbon;
@@ -24,6 +27,7 @@ class UserController extends Controller
 
      public function index()
      {
+        $pengguna = Auth::user();
          // Mengambil semua pengguna dengan peran 'user'
          $user = User::where('role', 'user')->get();
      
@@ -40,7 +44,8 @@ class UserController extends Controller
          }
      
          return view('dashboard.akun.user.index', compact('user', 'jumlahPeminjaman'), [
-             'title' => 'User'
+             'title' => 'User',
+             'pengguna' => $pengguna
          ]);
      }
      
@@ -51,20 +56,24 @@ class UserController extends Controller
      */
     public function create()
     {
+        $pengguna = Auth::user();
         $divisi = Divisi::all();
 
         return view('dashboard.akun.user.usercreate', compact('divisi'), [
-            'title' => 'create user'
+            'title' => 'create user',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function tambahaset($id){
+        $pengguna = Auth::user();
         $user = User::findOrFail($id);
         $aset = Aset::all();
         $lokasi = Lokasi::all();
 
-        return view('dashboard.akun.user.tambahasetcreate', compact('user', 'aset', 'lokasi'), [
-            'title' => 'Tambah Aset'
+        return view('dashboard.akun.user.daftaraset.tambahasetcreate', compact('user', 'aset', 'lokasi'), [
+            'title' => 'Tambah Aset',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -73,6 +82,42 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+            'divisi' => 'required',
+            'alamat' => 'required|string|max:255',
+            'noTelp' => 'required|string|max:20',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'nama.required' => 'Kolom nama wajib diisi.',
+            'nama.string' => 'Kolom nama harus berupa teks.',
+            'nama.max' => 'Panjang nama tidak boleh melebihi 255 karakter.',
+            'email.required' => 'Kolom email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
+            'password.required' => 'Kolom password wajib diisi.',
+            'password.min' => 'Panjang password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'divisi.required' => 'Kolom divisi wajib diisi.',
+            'alamat.required' => 'Kolom alamat wajib diisi.',
+            'alamat.string' => 'Kolom alamat harus berupa teks.',
+            'alamat.max' => 'Panjang alamat tidak boleh melebihi 255 karakter.',
+            'noTelp.required' => 'Kolom nomor telepon wajib diisi.',
+            'noTelp.string' => 'Kolom nomor telepon harus berupa teks.',
+            'noTelp.max' => 'Panjang nomor telepon tidak boleh melebihi 20 karakter.',
+            'image.required' => 'Kolom foto wajib diisi.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format file harus jpeg, png, jpg, atau gif.',
+            'image.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
+        ]);
+
+        // Simpan gambar baru
+        $imagePath = $request->file('image')->store('user-images');
+
+        // Simpan data user
         $user = User::create([
             'name' => $request->nama,
             'email' => $request->email,
@@ -80,27 +125,28 @@ class UserController extends Controller
             'role' => 'User'
         ]);
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('user-images');
-        }
-
-        $UserProfile = UserProfile::create([
-            'user_id' =>$user->id,
-            'divisi_id' =>$request->divisi,
-            'alamat' =>$request->alamat,
+        // Simpan data profil user
+        $userProfile = UserProfile::create([
+            'user_id' => $user->id,
+            'divisi_id' => $request->divisi,
+            'alamat' => $request->alamat,
             'noTelp' => $request->noTelp,
             'image' => $imagePath
         ]);
 
-        return redirect(route('user.index'));
+        // Redirect ke halaman indeks user
+        return redirect(route('user.index'))->with('success', 'User berhasil dibuat.');
     }
 
-    public function tambahasetstore($id, Request $request){
+
+
+    public function tambahasetstore($id, Request $request)
+    {
         // Validasi input
         $user = User::findOrFail($id);
         $request->validate([
             'keterangan' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,pdf|max:2048',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,docx|max:2048',
         ]);
 
         // Membuat nomor urut baru untuk peminjaman
@@ -128,7 +174,7 @@ class UserController extends Controller
         }
 
         // Membuat entri peminjaman baru
-        Peminjaman::create([
+        $peminjaman = Peminjaman::create([
             'user_id' => $user->id,
             'aset_id' => $request->aset,
             'nama_aset_id' => $request->namaAset,
@@ -140,15 +186,45 @@ class UserController extends Controller
             'image' => $imagePath
         ]);
 
+        // Buat history jika peminjaman diterima
+        if ($status === "Diterima") {
+            $history = History::create([
+                'user_id' => $user->id,
+                'user_detail_id' => $request->namaAset,
+                'action' => 'Peminjaman',
+                'keterangan' => 'Peminjaman ' . $peminjaman->nama_aset_id . ' diterima pada ' . now()->toDateTimeString()
+            ]);
+        }
+
+        // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+        $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $request->namaAset)
+                            ->where('status', 'Diterima')
+                            ->count();
+        // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+        $asetDetail = AsetDetail::findOrFail($request->namaAset);
+
+        // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+        if ($jumlahPeminjaman == $asetDetail->jumlah) {
+            $asetDetail->update([
+                'status' => 'Tidak Tersedia'
+            ]);
+        } else {
+            $asetDetail->update([
+                'status' => 'Tersedia'
+            ]);
+        }
+
         // Redirect ke halaman indeks permintaan
         return redirect(route('user.show.daftaraset', $user->id));
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show($id)
     {
+        $pengguna = Auth::user();
         $user = User::findOrFail($id);
 
         $peminjaman = Peminjaman::where('user_id', $id)->get();
@@ -157,11 +233,14 @@ class UserController extends Controller
         $jumlahPengembalian = $user->pengembalian()->count();
 
         return view('dashboard.akun.user.showuser', compact('user', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'),[
-            'title' => 'Detail User'
+            'title' => 'Detail User',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function daftaraset($id){
+
+        $pengguna = Auth::user();
 
         $user = User::findOrFail($id);
 
@@ -170,18 +249,22 @@ class UserController extends Controller
         $jumlahPeminjaman = $user->peminjaman()->count();
         $jumlahPengembalian = $user->pengembalian()->count();
 
-        return view('dashboard.akun.user.daftaraset', compact('user', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'),[
-            'title' => 'Detail User'
+        return view('dashboard.akun.user.daftaraset.daftaraset', compact('user', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'),[
+            'title' => 'Detail User',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function daftarasetshow($user_id, $peminjaman_id){
+        $pengguna = Auth::user();
+
         $user = User::findOrFail($user_id);
 
         $peminjaman = Peminjaman::findOrFail($peminjaman_id);
 
-        return view('dashboard.akun.user.showdaftaraset', compact('user', 'peminjaman'),[
-            'title' => 'Detail Daftar Aset'
+        return view('dashboard.akun.user.daftaraset.showdaftaraset', compact('user', 'peminjaman'),[
+            'title' => 'Detail Daftar Aset',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -242,12 +325,15 @@ class UserController extends Controller
 
 
     public function uploadformulir($user_id, $peminjaman_id){
+        $pengguna = Auth::user();
+
         $user = User::findOrFail($user_id);
 
         $peminjaman = Peminjaman::findOrFail($peminjaman_id);
 
-        return view('dashboard.akun.user.uploadformulir', compact('user', 'peminjaman'),[
-            'title' => 'Upload Formulir'
+        return view('dashboard.akun.user.daftaraset.uploadformulir', compact('user', 'peminjaman'),[
+            'title' => 'Upload Formulir',
+            'pengguna' => 'pengguna'
         ]);
     }
 
@@ -269,7 +355,7 @@ class UserController extends Controller
         // Validasi input
         $request->validate([
             'keterangan' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,pdf|max:2048', // Max 2MB
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,pdf,docx', // Max 2MB
         ]);
 
         // Jika ada file gambar di-upload, simpan gambar tersebut dan perbarui kode peminjaman
@@ -302,6 +388,91 @@ class UserController extends Controller
         return redirect(route('user.show.daftaraset.show', ['user_id' => $user_id, 'peminjaman_id' => $peminjaman_id]));
     }
 
+    public function pengembalian($user_id, $peminjaman_id){
+        $pengguna = Auth::user();
+        $user = User::findOrFail($user_id);
+        $peminjaman = Peminjaman::findOrFail($peminjaman_id);
+        $lokasi = Lokasi::all();
+
+        return view('dashboard.akun.user.daftaraset.pengembalian', compact('user', 'peminjaman', 'lokasi'),[
+            'title' => 'pengembalian',
+            'pengguna' => $pengguna
+        ]);
+    }
+    
+    public function exportformulirpengembalian($user_id, $peminjaman_id)
+    {
+        $user = User::findOrFail($user_id);
+        $userPemberi = Auth::user();
+        $peminjaman = Peminjaman::findOrFail($peminjaman_id);
+    
+        // Set lokalitas Carbon ke bahasa Indonesia
+        App::setLocale('id');
+    
+        // Mendapatkan tanggal dan hari saat ini
+        $tglPembuatanDokumen = Carbon::now()->translatedFormat('j F Y');
+        $hariPembuatanDokumen = Carbon::now()->translatedFormat('l');
+    
+        $templatePeminjaman = new TemplateProcessor('word-template/pengembalian.docx');
+        $templatePeminjaman->setValue('id', $peminjaman->id);
+        $templatePeminjaman->setValue('tanggal', $tglPembuatanDokumen);
+        $templatePeminjaman->setValue('hari', $hariPembuatanDokumen);
+        $templatePeminjaman->setValue('jenisAset', $peminjaman->aset->namaAset);
+        $templatePeminjaman->setValue('merek', $peminjaman->asetDetail->namaAset);
+        $templatePeminjaman->setValue('kodeAset', $peminjaman->aset->kodeAset);
+        $templatePeminjaman->setValue('namaPemberi', $userPemberi->name);
+        $templatePeminjaman->setValue('divisiPemberi', $userPemberi->profile->divisi->namaDivisi);
+        $templatePeminjaman->setValue('namaPenerima', $user->name);
+        $templatePeminjaman->setValue('divisiPenerima', $user->profile->divisi->namaDivisi);
+        $fileName = $user->name;
+        $templatePeminjaman->saveAs('pengembalian'.$fileName.'.docx');
+        
+        return response()->download('pengembalian'.$fileName.'.docx')->deleteFileAfterSend(true);
+    }
+
+    public function pengembalianstore($user_id, $peminjaman_id, Request $request)
+    {
+        $user = User::findOrFail($user_id);
+        $peminjaman = Peminjaman::findOrFail($peminjaman_id);
+
+        // Validasi
+        $request->validate([
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif,pdf,docx'
+        ]);
+
+        // Simpan gambar baru
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('pengembalian-images');
+        } else {
+            $imagePath = null;
+        }
+
+        // Atur tanggal pengembalian sebagai hari ini
+        $tglPengembalian = Carbon::now()->toDateString();
+
+        // Simpan data pengembalian
+        $pengembalian = Pengembalian::create([
+            'user_id' => $peminjaman->user_id,
+            'aset_id' => $peminjaman->aset_id,
+            'nama_aset_id' => $peminjaman->nama_aset_id,
+            'kodePengembalian' => $peminjaman->kodePeminjaman,
+            'tglPengembalian' => $tglPengembalian,
+            'status' => "Dikembalikan",
+            'lokasi_id' => $peminjaman->lokasi_id,
+            'keterangan' => "telah mengisi formulir",
+            'image' => $imagePath,
+        ]);
+
+        // Hapus peminjaman yang terkait
+        Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->delete();
+
+        // Redirect ke halaman indeks permintaan
+        return redirect(route('user.show.daftaraset', $user->id));
+    }
+
+
+    
+
     
 
 
@@ -310,12 +481,15 @@ class UserController extends Controller
      */
     public function edit($id)
     {
+        $pengguna = Auth::user();
+
         $user = User::findOrFail($id);
 
         $divisi = Divisi::all();
 
         return view('dashboard.akun.user.useredit', compact('divisi', 'user'), [
-            'title' => 'Edit user'
+            'title' => 'Edit user',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -362,10 +536,13 @@ class UserController extends Controller
 
     public function editpassword($id){
 
+        $pengguna = Auth::user();
+
         $user = User::findOrFail($id);
 
         return view('dashboard.akun.user.userpasswordedit', compact('user'), [
-            'title' => 'Edit Password'
+            'title' => 'Edit Password',
+            'pengguna' => $pengguna
         ]);
     }
 

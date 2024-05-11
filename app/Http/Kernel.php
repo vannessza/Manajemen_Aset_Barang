@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'bothSuperAdminAndAdmin' => \App\Http\Middleware\BothSuperAdminAndAdmin::class,
         'vendor' => \App\Http\Middleware\VendorAccess::class,
         'CheckRole' => \App\Http\Middleware\CheckRole::class,
+        'CheckRolePengguna' => \App\Http\Middleware\CheckRolePengguna::class,
     ];
 }

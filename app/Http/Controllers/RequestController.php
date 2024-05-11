@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmailRequestRespon;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
 use App\Models\Penghancuran;
@@ -9,6 +10,7 @@ use App\Models\Lokasi;
 use App\Models\User;
 use App\Models\Aset;
 use App\Models\AsetDetail;
+use App\Models\History;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -20,6 +22,7 @@ class RequestController extends Controller
      */
     public function index()
     {
+        $pengguna = Auth::user();
         $peminjaman = Peminjaman::all();
         $pengembalian = Pengembalian::all();
         $penghancuran = Penghancuran::all();
@@ -43,7 +46,8 @@ class RequestController extends Controller
             'peminjaman' => $peminjamanDiproses,
             'pengembalian' => $pengembalianDiproses,
             'penghancuran' => $penghancuranDiproses,
-            'title' => 'Request'
+            'title' => 'Request',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -52,53 +56,65 @@ class RequestController extends Controller
      */
     public function terimapeminjaman($id)
     {
+        $pengguna = Auth::user();
         $peminjaman = Peminjaman::findOrFail($id);
-
+        
         return view('dashboard.transaksi.request.terimapeminjaman', compact('peminjaman'),[
-            'title' => 'Terima'
+            'title' => 'Terima',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function terimapengembalian($id)
     {
+        $pengguna = Auth::user();
         $pengembalian = Pengembalian::findOrFail($id);
-
+        
         return view('dashboard.transaksi.request.terimapengembalian', compact('pengembalian'),[
-            'title' => 'Terima'
+            'title' => 'Terima',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function terimapenghancuran($id)
     {
+        $pengguna = Auth::user();
         $penghancuran = Penghancuran::findOrFail($id);
 
         return view('dashboard.transaksi.request.terimapenghancuran', compact('penghancuran'),[
-            'title' => 'Terima'
+            'title' => 'Terima',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function tolakpeminjaman($id)
     {
+        $pengguna = Auth::user();
         $peminjaman = Peminjaman::findOrFail($id);
 
         return view('dashboard.transaksi.request.tolakpeminjaman', compact('peminjaman'), [
-            'title' => 'Tolak'
+            'title' => 'Tolak',
+            'pengguna' => $pengguna
         ]);
     }
     public function tolakpengembalian($id)
     {
+        $pengguna = Auth::user();
         $pengembalian = Pengembalian::findOrFail($id);
 
         return view('dashboard.transaksi.request.tolakpengembalian', compact('pengembalian'), [
-            'title' => 'Tolak'
+            'title' => 'Tolak',
+            'penggunaa' => $pengguna
         ]);
     }
     public function tolakpenghancuran($id)
     {
+        $pengguna = Auth::user();
         $penghancuran = Penghancuran::findOrFail($id);
 
         return view('dashboard.transaksi.request.tolakpenghancuran', compact('penghancuran'), [
-            'title' => 'Tolak'
+            'title' => 'Tolak',
+            'pengguna' => $pengguna
         ]);
     }
     public function terimapeminjamanupdate(Request $request, $id)
@@ -149,20 +165,58 @@ class RequestController extends Controller
             'kodePeminjaman' => $kodePeminjaman,
         ]);
 
+        // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+        $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $peminjaman->nama_aset_id)->count();
+
+        // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+        $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
+
+        // Simpan history
+        if ($status === "Diterima") {
+            $history = History::create([
+                'user_id' => $peminjaman->user_id,
+                'user_detail_id' => $peminjaman->nama_aset_id,
+                'action' => 'Peminjaman',
+                'keterangan' => 'Peminjaman ' . $peminjaman->aset->namaAset . ' dibuat pada ' . now()->toDateTimeString()
+            ]);
+        }
+
+        // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+        if ($jumlahPeminjaman == $asetDetail->jumlah) {
+            $asetDetail->update([
+                'status' => 'Tidak Tersedia'
+            ]);
+        } else {
+            $asetDetail->update([
+                'status' => 'Tersedia'
+            ]);
+        }
+            $data['email'] = $peminjaman->user->email;
+            $data['respon'] = "Diterima";
+            $data['request'] = "Peminjaman";
+            $data['name'] = $peminjaman->user->name;
+            $data['namaAset'] = $peminjaman->AsetDetail->namaAset;
+            $data['kategori'] = $peminjaman->aset->namaAset;
+            $data['tanggal'] = $peminjaman->tglPeminjaman;
+            $data['lokasi'] = $peminjaman->lokasi->alamat;
+            $data['keterangan'] = $peminjaman->keterangan;
+        
+            dispatch(new SendEmailRequestRespon($data));
+
         // Redirect ke halaman indeks permintaan
         return redirect(route('request.index'));
     }
 
 
+
     public function terimapengembaliannupdate(Request $request, $id)
     {
+        $pengembalian = Pengembalian::findOrFail($id);
         // Validasi input
         $request->validate([
             'keterangan' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
-
-        $pengembalian = Pengembalian::findOrFail($id);
 
         // Menentukan status berdasarkan apakah ada gambar atau tidak
         $status = $request->hasFile('image') ? "Dikembalikan" : "Diproses";
@@ -170,7 +224,7 @@ class RequestController extends Controller
         // Jika ada file gambar di-upload, simpan gambar tersebut
         $imagePath = $pengembalian->image;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('pengembalian');
+            $imagePath = $request->file('image')->store('pengembalian-images');
 
             // Hapus gambar lama jika ada
             if ($pengembalian->image) {
@@ -185,12 +239,50 @@ class RequestController extends Controller
             'status' => $status,
         ]);
 
-        // Menghapus peminjaman berdasarkan  kode peminjaman
-        Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->delete();
+        // Jika status adalah "Dikembalikan", ubah status AsetDetail menjadi "Tersedia" jika jumlah peminjaman sama dengan jumlah aset detailnya
+        if ($status === "Dikembalikan") {
+            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $pengembalian->nama_aset_id)
+                ->where('status', 'Diterima')
+                ->count();
+
+            $asetDetail = AsetDetail::findOrFail($pengembalian->nama_aset_id);
+            if ($jumlahPeminjaman == $asetDetail->jumlah) {
+                $asetDetail->update([
+                    'status' => 'Tersedia'
+                ]);
+            }
+        }
+        
+
+        // Simpan history
+        if ($status === "Dikembalikan") {
+            $history = History::create([
+                'user_id' => $pengembalian->user_id,
+                'user_detail_id' => $pengembalian->nama_aset_id,
+                'action' => 'Pengembalian',
+                'keterangan' => 'Pengembalian ' . $pengembalian->aset->namaAset . ' dibuat pada ' . now()->toDateTimeString()
+            ]); 
+            // Menghapus peminjaman berdasarkan  kode peminjaman
+            }
+        
+            $data['email'] = $pengembalian->user->email;
+            $data['respon'] = "Diterima";
+            $data['request'] = "Pengembalian";
+            $data['name'] = $pengembalian->user->name;
+            $data['namaAset'] = $pengembalian->AsetDetail->namaAset;
+            $data['kategori'] = $pengembalian->aset->namaAset;
+            $data['tanggal'] = $pengembalian->tglPeminjaman;
+            $data['lokasi'] = $pengembalian->lokasi->alamat;
+            $data['keterangan'] = $pengembalian->keterangan;
+        
+            dispatch(new SendEmailRequestRespon($data));
+    
 
         // Redirect ke halaman indeks permintaan
         return redirect(route('request.index'));
     }
+
+
 
     public function terimapenghancuranupdate(Request $request, $id){
         $penghancuran = Penghancuran::findOrFail($id);
@@ -234,6 +326,18 @@ class RequestController extends Controller
             'keterangan' => $request->keterangan,
             'status' => "Ditolak"
         ]);
+
+            $data['email'] = $peminjaman->user->email;
+            $data['respon'] = "Ditolak";
+            $data['request'] = "Peminjaman";
+            $data['name'] = $peminjaman->user->name;
+            $data['namaAset'] = $peminjaman->AsetDetail->namaAset;
+            $data['kategori'] = $peminjaman->aset->namaAset;
+            $data['tanggal'] = $peminjaman->tglPeminjaman;
+            $data['lokasi'] = $peminjaman->lokasi->alamat;
+            $data['keterangan'] = $peminjaman->keterangan;
+        
+            dispatch(new SendEmailRequestRespon($data));
     
         // Redirect ke halaman indeks permintaan
         return redirect(route('request.index'));
@@ -280,28 +384,34 @@ class RequestController extends Controller
      */
     public function showpeminjaman($id)
     {
+        $pengguna = Auth::user();
         $peminjaman = Peminjaman::findOrFail($id);
 
         return view('dashboard.transaksi.request.showpeminjaman', compact('peminjaman'), [
-            'title' => 'Detail Peminjaman'
+            'title' => 'Detail Peminjaman',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function showpengembalian($id)
     {
+        $pengguna = Auth::user();
         $pengembalian = Pengembalian::findOrFail($id);
 
         return view('dashboard.transaksi.request.showpengembalian', compact('pengembalian'), [
-            'title' => 'Detail Peminjaman'
+            'title' => 'Detail Peminjaman',
+            'pengguna' => $pengguna
         ]);
     }
 
     public function showpenghancuran($id)
     {
+        $pengguna = Auth::user();
         $penghancuran = Penghancuran::findOrFail($id);
 
         return view('dashboard.transaksi.request.showpenghancuran', compact('penghancuran'), [
-            'title' => 'Detail Penghancuran'
+            'title' => 'Detail Penghancuran',
+            'pengguna' => $pengguna
         ]);
     }
 

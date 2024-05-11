@@ -9,7 +9,7 @@
             </a>
            
             <div class="m-auto">
-                <h1 class="text-lg font-semibold text-gray-900">User</h1>
+                <h1 class="text-lg font-semibold text-gray-900">Edit User</h1>
             </div>
             
         </div>
@@ -78,7 +78,7 @@
                     Edit
                 </button>
                 <div class="w-full text-center mt-2">
-                     <a href="{{ route('password.edit', $user->id) }}" class="text-blue-600 hover:underline hover:text-primary-dark">Ubah Password</a>
+                     <a href="{{ route('user.password.edit', $user->id) }}" class="text-blue-600 hover:underline hover:text-primary-dark">Ubah Password</a>
                 </div>
             </form>
         </div>

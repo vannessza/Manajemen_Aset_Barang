@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Aset;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DataAsetController extends Controller
 {
@@ -12,10 +13,12 @@ class DataAsetController extends Controller
      */
     public function index()
     {
+        $pengguna = Auth::user();
         $dataAset = Aset::all();
 
         return view('dashboard.kelolaaset.dataaset.index' , compact('dataAset') ,[
-            'title' => 'Data Aset'
+            'title' => 'Data Aset',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -24,8 +27,10 @@ class DataAsetController extends Controller
      */
     public function create()
     {
+        $pengguna = Auth::user();
         return view('dashboard.kelolaaset.dataaset.asetregistercreate',[
-            'title' => 'Create Aset Register'
+            'title' => 'Create Aset Register',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -34,16 +39,19 @@ class DataAsetController extends Controller
      */
     public function store(Request $request)
     {
-        // Membuat kode aset secara otomatis
-        $lastAset = Aset::latest()->first();
-        if ($lastAset) {
-            $lastNumber = intval(substr($lastAset->kodeAset, 2)); // Ambil nomor dari kode terakhir
-            $kodeAset = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT); // Buat kode baru dengan nomor yang lebih besar
-        } else {
-            // Jika belum ada aset sebelumnya, mulai dengan nomor 0001
+        $latestAset = Aset::latest()->first();
+
+        $latestAsetId = $latestAset ? $latestAset->id : 0;
+
+        // Jika ID terbaru adalah 0 dan tidak ada aset, mulai dengan 1
+        if ($latestAsetId == 0) {
             $kodeAset = '001';
+        } else {
+            // Membuat kode aset dengan format 3 digit menggunakan ID terbaru
+            $kodeAset = str_pad($latestAsetId + 1, 3, '0', STR_PAD_LEFT);
         }
 
+        // Simpan data aset baru
         $dataAset = Aset::create([
             'kodeAset' => $kodeAset,
             'namaAset' => $request->aset,
@@ -56,10 +64,11 @@ class DataAsetController extends Controller
             'masaRetensi' => $request->masaRetensi
         ]);
 
-        $dataAset->save();
-
+        // Redirect ke halaman indeks data aset
         return redirect(route('dataaset.index'));
     }
+
+
 
     /**
      * Display the specified resource.
@@ -74,10 +83,12 @@ class DataAsetController extends Controller
      */
     public function edit($id)
     {
+        $pengguna = Auth::user();
         $aset = Aset::findOrFail($id);
 
         return view('dashboard.kelolaaset.dataaset.asetregisteredit', compact('aset'),[
-            'title' => 'Edit Data Aset'
+            'title' => 'Edit Data Aset',
+            'pengguna' => $pengguna
         ]);
     }
 

@@ -24,4 +24,8 @@ class Peminjaman extends Model
     public function pengembalian(){
         return $this->hasMany(Pengembalian::class);
     }
+
+    public function lokasi(){
+        return $this->belongsTo(Lokasi::class, 'lokasi_id');
+    }
 }

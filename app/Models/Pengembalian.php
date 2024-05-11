@@ -23,4 +23,7 @@ class Pengembalian extends Model
     public function pengembalian(){
         return $this->belongsTo(AsetDetail::class, 'nama_aset_id');
     }
+    public function lokasi(){
+        return $this->belongsTo(Lokasi::class, 'lokasi_id');
+    }
 }

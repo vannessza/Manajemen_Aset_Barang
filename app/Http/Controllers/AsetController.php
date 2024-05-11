@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AsetDetail;
 use App\Models\Aset;
+use Illuminate\Support\Facades\Auth;
+
 class AsetController extends Controller
 {
     /**
@@ -12,10 +14,12 @@ class AsetController extends Controller
      */
     public function index()
     {
+        $pengguna = Auth::user();
         $aset = Aset::all();
-        $asetDetail = AsetDetail::all();
+        $asetDetail = AsetDetail::where('status', 'Tersedia')->get();
         return view('dashboard.kelolaaset.aset.index', compact('aset', 'asetDetail'), [
-            'title' => 'Aset Detail'
+            'title' => 'Aset Detail',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -40,9 +44,11 @@ class AsetController extends Controller
      */
     public function show($id)
     {
+        $pengguna = Auth::user();
         $asetDetail = AsetDetail::findOrFail($id);
         return view('dashboard.kelolaaset.aset.showasetdetail', compact('asetDetail'), [
-            'title' => 'Aset Detail'
+            'title' => 'Aset Detail',
+            'pengguna' => $pengguna
         ]);
     }
 

@@ -15,11 +15,37 @@ class PenghancuranController extends Controller
      */
     public function index()
     {   
+        $pengguna = Auth::user();
         $user = Auth::user();
         $penghancuran = Penghancuran::all();
 
         return view('dashboard.transaksi.penghancuran.index', compact('penghancuran', 'user'), [
-            'title' => 'Penghancuran'
+            'title' => 'Penghancuran',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+    public function penghancuran(){
+        $pengguna = Auth::user();
+        $penghancuran = Penghancuran::all();
+        $penghancuranDiterima = $penghancuran->filter(function ($penghancuran) {
+            return $penghancuran->status === 'Disetujui';
+        });
+        return view('dashboard.transaksi.penghancuran.penghancuran', [
+            'penghancuran' => $penghancuranDiterima,
+            'title' => 'Penghancuran',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+    public function history(){
+        $pengguna = Auth::user();
+        $penghancuran = Penghancuran::latest()->get();
+
+        return view('dashboard.transaksi.penghancuran.history', [
+            'penghancuran' => $penghancuran,
+            'title' => 'Penghancuran',
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -32,7 +58,8 @@ class PenghancuranController extends Controller
         $aset = Aset::with('AsetDetail')->get();
 
         return view('dashboard.transaksi.penghancuran.penghancurancreate', compact('user', 'aset'),[
-            'title' => 'Create Penghancuran'
+            'title' => 'Create Penghancuran',
+            'pengguna' => $user
         ]);
     }
 
@@ -65,19 +92,28 @@ class PenghancuranController extends Controller
      */
     public function show($id)
     {
+        $pengguna = Auth::user();
         $penghancuran = Penghancuran::findOrFail($id);
 
         return view('dashboard.transaksi.penghancuran.showpenghancuran', compact('penghancuran'), [
-            'title' => 'Detail Penghancuran'
+            'title' => 'Detail Penghancuran',
+            'pengguna' => $pengguna
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Penghancuran $penghancuran)
+    public function edit($id)
     {
-        //
+        $user = Auth::user();
+        $penghancuran = Penghancuran::findOrFail($id);
+        $aset = Aset::with('AsetDetail')->get();
+
+        return view('dashboard.transaksi.penghancuran.penghancuranedit', compact('user', 'aset', 'penghancuran'),[
+            'title' => 'Edit Penghancuran',
+            'pengguna' => $user
+        ]);
     }
 
     /**
