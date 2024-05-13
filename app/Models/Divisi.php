@@ -10,6 +10,8 @@ class Divisi extends Model
     use HasFactory;
     protected $table = "divisi";
 
+    protected $fillable = ['kodeDivisi', 'namaDivisi'];
+
     public function userProfile()
     {
         return $this->hasMany(UserProfile::class);

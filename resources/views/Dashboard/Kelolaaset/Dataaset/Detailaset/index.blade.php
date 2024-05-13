@@ -88,7 +88,13 @@
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $ad['jenisAset'] }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $ad['klasifikasiAset'] }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $ad['jumlah'] }}</td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $ad['status'] }}</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm @if ($ad->status === 'Tersedia')
+                            text-green-600 font-semibold
+                          @elseif($ad->status === 'Diproses')
+                              text-yellow-600 font-semibold
+                          @elseif($ad->status === 'Tidak Tersedia')
+                              text-red-600 font-semibold
+                          @endif">{{ $ad['status'] }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                             <a href="{{ route('detailaset.show', $ad->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
                             <a href="{{ route('detailaset.edit', ['aset' => $aset->id, 'asetDetail' => $ad->id]) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>

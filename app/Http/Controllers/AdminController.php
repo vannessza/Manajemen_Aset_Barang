@@ -182,7 +182,7 @@ class AdminController extends Controller
         ]);
 
         // Redirect ke halaman indeks permintaan
-        return redirect(route('admin.show.daftaraset', $admin->id));
+        return redirect(route('admin.show.history', $admin->id));
     }
 
     /**
@@ -192,8 +192,7 @@ class AdminController extends Controller
     {
         $pengguna = Auth::user();
         $admin = User::findOrFail($id);
-
-        $peminjaman = Peminjaman::where('user_id', $id)->get();
+        $peminjaman = Peminjaman::all();
 
         $jumlahPeminjaman = $admin->peminjaman()->count();
         $jumlahPengembalian = $admin->pengembalian()->count();
@@ -209,7 +208,9 @@ class AdminController extends Controller
 
         $admin = User::findOrFail($id);
 
-        $peminjaman = Peminjaman::where('user_id', $id)->get();
+        $peminjaman = $admin->peminjaman->filter(function ($peminjaman){
+            return $peminjaman->status === "Diterima";
+        });
 
         $jumlahPeminjaman = $admin->peminjaman()->count();
         $jumlahPengembalian = $admin->pengembalian()->count();
@@ -220,6 +221,24 @@ class AdminController extends Controller
         ]);
     }
 
+    public function history($id){
+        $pengguna = Auth::user();
+
+        $admin = User::findOrFail($id);
+
+        $peminjaman = $admin->peminjaman()->latest()->get();
+
+        $jumlahPeminjaman = $admin->peminjaman()->count();
+        $jumlahPengembalian = $admin->pengembalian()->count();
+
+        return view('dashboard.akun.admin.daftaraset.history', compact('admin', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'),[
+            'title' => 'Detail Admin',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+
+
     public function daftarasetshow($user_id, $peminjaman_id){
         $pengguna = Auth::user();
 
@@ -228,6 +247,19 @@ class AdminController extends Controller
         $peminjaman = Peminjaman::findOrFail($peminjaman_id);
 
         return view('dashboard.akun.admin.daftaraset.showdaftaraset', compact('admin', 'peminjaman'),[
+            'title' => 'Detail Daftar Aset',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+    public function hsitoryshow($user_id, $peminjaman_id){
+        $pengguna = Auth::user();
+
+        $admin = User::findOrFail($user_id);
+
+        $peminjaman = Peminjaman::findOrFail($peminjaman_id);
+
+        return view('dashboard.akun.admin.daftaraset.showhistory', compact('admin', 'peminjaman'),[
             'title' => 'Detail Daftar Aset',
             'pengguna' => $pengguna
         ]);
@@ -350,7 +382,7 @@ class AdminController extends Controller
         ]);
 
         // Redirect ke halaman indeks permintaan
-        return redirect(route('admin.show.daftaraset.show', ['user_id' => $user_id, 'peminjaman_id' => $peminjaman_id]));
+        return redirect(route('admin.show.daftaraset.showhistory', ['user_id' => $user_id, 'peminjaman_id' => $peminjaman_id]));
     }
 
     public function pengembalian($user_id, $peminjaman_id){
@@ -361,7 +393,7 @@ class AdminController extends Controller
 
         return view('dashboard.akun.admin.daftaraset.pengembalian', compact('admin', 'peminjaman', 'lokasi'),[
             'title' => 'pengembalian',
-            'pengguna' => 'pengguna'
+            'pengguna' => $pengguna
         ]);
     }
     
@@ -432,7 +464,7 @@ class AdminController extends Controller
         Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->delete();
 
         // Redirect ke halaman indeks permintaan
-        return redirect(route('admin.show.daftaraset', $admin->id));
+        return redirect(route('pengembalian.datapengembalian'));
     }
 
 

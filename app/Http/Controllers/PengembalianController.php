@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Aset;
 use App\Models\History;
 use App\Models\Lokasi;
+use App\Models\Notification;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
 use Carbon\Carbon;
@@ -234,7 +235,7 @@ class PengembalianController extends Controller
     public function storeuser(Request $request){
         $peminjaman = Peminjaman::findOrFail($request->namaAset);
 
-        $adminUsers = User::where('role', 'admin')->orWhere('role', 'adminsuper')->get();
+        $adminUsers = Notification::all();;
 
         $dataPengembalian = Pengembalian::create([
             'user_id' => $peminjaman->user_id,
@@ -400,7 +401,7 @@ class PengembalianController extends Controller
         $pengembalian = Pengembalian::findOrFail($id);
         $peminjaman = Peminjaman::findOrFail($request->namaAset);
         
-        $adminUsers = User::where('role', 'admin')->orWhere('role', 'adminsuper')->get();
+        $adminUsers = Notification::all();;
 
         $pengembalian->update([
             'user_id' => $peminjaman->user_id,

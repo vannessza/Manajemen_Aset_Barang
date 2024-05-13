@@ -10,6 +10,8 @@ use App\Http\Controllers\PenghancuranController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingController;
 use App\Http\Middleware\CheckRolePengguna;
 use App\Jobs\SendEmailJob;
 use Illuminate\Support\Facades\Route;
@@ -125,9 +127,11 @@ Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('user.edit'
 Route::patch('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
 Route::get('/user/show/{id}', [UserController::class, 'show'])->name('user.show');
 Route::get('/user/show/daftar aset/{id}', [UserController::class, 'daftaraset'])->name('user.show.daftaraset');
+Route::get('/user/show/history/{id}', [UserController::class, 'history'])->name('user.show.history');
 Route::get('/user/show/daftar aset/tambah aset/{id}', [UserController::class, 'tambahaset'])->name('user.show.tambahaset.create');
 Route::post('/user/show/daftar aset/tambah aset/store/{id}', [UserController::class, 'tambahasetstore'])->name('user.show.tambahaset.store');
 Route::get('/user/show/daftar aset/show/{user_id}/{peminjaman_id}', [UserController::class, 'daftarasetshow'])->name('user.show.daftaraset.show');
+Route::get('/user/show/daftar aset/show history/{user_id}/{peminjaman_id}', [UserController::class, 'hsitoryshow'])->name('user.show.daftaraset.showhistory');
 Route::get('/user/show/daftar aset/show/word export/{user_id}/{peminjaman_id}', [UserController::class, 'exportformulir'])->name('user.show.daftaraset.exportformulir');
 Route::get('/user/show/daftar aset/show/upload/{user_id}/{peminjaman_id}', [UserController::class, 'uploadformulir'])->name('user.show.daftaraset.uploadformulir');
 Route::get('/user/show/daftar-aset/show/export-bukti-formulir/{user_id}/{peminjaman_id}', [UserController::class, 'exportformulirbukti'])->name('user.show.daftaraset.exportbuktiformulir');
@@ -146,9 +150,11 @@ Route::get('/admin/edit/{id}', [AdminController::class, 'edit'])->name('admin.ed
 Route::patch('/admin/update/{id}', [AdminController::class, 'update'])->name('admin.update');
 Route::get('/admin/show/{id}', [AdminController::class, 'show'])->name('admin.show');
 Route::get('/admin/show/daftar aset/{id}', [AdminController::class, 'daftaraset'])->name('admin.show.daftaraset');
+Route::get('/admin/show/history/{id}', [AdminController::class, 'history'])->name('admin.show.history');
 Route::get('/admin/show/daftar aset/tambah aset/{id}', [AdminController::class, 'tambahaset'])->name('admin.show.tambahaset.create');
 Route::post('/admin/show/daftar aset/tambah aset/store/{id}', [AdminController::class, 'tambahasetstore'])->name('admin.show.tambahaset.store');
 Route::get('/admin/show/daftar aset/show/{user_id}/{peminjaman_id}', [AdminController::class, 'daftarasetshow'])->name('admin.show.daftaraset.show');
+Route::get('/admin/show/daftar aset/show history/{user_id}/{peminjaman_id}', [AdminController::class, 'hsitoryshow'])->name('admin.show.daftaraset.showhistory');
 Route::get('/admin/show/daftar aset/show/word export/{user_id}/{peminjaman_id}', [AdminController::class, 'exportformulir'])->name('admin.show.daftaraset.exportformulir');
 Route::get('/admin/show/daftar aset/show/upload/{user_id}/{peminjaman_id}', [AdminController::class, 'uploadformulir'])->name('admin.show.daftaraset.uploadformulir');
 Route::get('/admin/show/daftar-aset/show/export-bukti-formulir/{user_id}/{peminjaman_id}', [AdminController::class, 'exportformulirbukti'])->name('admin.show.daftaraset.exportbuktiformulir');
@@ -159,5 +165,33 @@ Route::post('/admin/show/daftar aset/show/pengembalian/store/{user_id}/{peminjam
 Route::get('/admin/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
 Route::get('/admin/edit/password/{id}', [AdminController::class, 'editpassword'])->name('admin.password.edit');
 Route::post('/admin/edit/ubah password', [AdminController::class, 'storepassword'])->name('admin.password.store');
+//profile
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::get('/profile/edit/password', [ProfileController::class, 'editpassword'])->name('profile.editpassword');
+Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('/profile/edit/ubah password', [ProfileController::class, 'storepassword'])->name('profile.editpassword.store');
+Route::get('/profile/daftar aset', [ProfileController::class, 'daftaraset'])->name('profile.daftaraset');
+Route::get('/profile/daftar aset/show/{id}', [ProfileController::class, 'daftarasetshow'])->name('profile.daftaraset.show');
+Route::get('/profile/daftar aset/pengembalian/{id}', [ProfileController::class, 'pengembalian'])->name('profile.daftaraset.pengembalian');
+Route::get('/profile/history', [ProfileController::class, 'history'])->name('profile.history');
+//setting
+Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+Route::get('/setting/divisi', [SettingController::class, 'indexdivisi'])->name('setting.index.divisi');
+Route::get('/setting/divisi/create', [SettingController::class, 'createdivisi'])->name('setting.create.divisi');
+Route::post('/setting/divisi/store', [SettingController::class, 'storedivisi'])->name('setting.store.divisi');
+Route::get('/setting/divisi/edit/{id}', [SettingController::class, 'editdivisi'])->name('setting.edit.divisi');
+Route::patch('/setting/divisi/update/{id}', [SettingController::class, 'updatedivisi'])->name('setting.update.divisi');
+Route::get('/setting/divisi/delete/{id}', [SettingController::class, 'deletedivisi'])->name('setting.delete.divisi');
+Route::get('/setting/lokasi', [SettingController::class, 'indexlokasi'])->name('setting.index.lokasi');
+Route::get('/setting/lokasi/create', [SettingController::class, 'createlokasi'])->name('setting.create.lokasi');
+Route::post('/setting/lokasi/store', [SettingController::class, 'storelokasi'])->name('setting.store.lokasi');
+Route::get('/setting/lokasi/edit/{id}', [SettingController::class, 'editlokasi'])->name('setting.edit.lokasi');
+Route::patch('/setting/lokasi/update/{id}', [SettingController::class, 'updatelokasi'])->name('setting.update.lokasi');
+Route::get('/setting/lokasi/delete/{id}', [SettingController::class, 'deletelokasi'])->name('setting.delete.lokasi');
+Route::get('/setting/notification', [SettingController::class, 'indexnotification'])->name('setting.index.notification');
+Route::get('/setting/notification/create', [SettingController::class, 'createnotification'])->name('setting.create.notification');
+Route::post('/setting/notificaation/store', [SettingController::class, 'storenotification'])->name('setting.store.notification');
+Route::get('/setting/notification/delete/{id}', [SettingController::class, 'deletenotification'])->name('setting.delete.notification');
 //logout
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');

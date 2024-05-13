@@ -11,6 +11,7 @@ use App\Models\Peminjaman;
 use App\Models\User;
 use App\Models\Aset;
 use App\Models\AsetDetail;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -221,7 +222,7 @@ class PeminjamanController extends Controller
         $user = Auth::user();
         $admin = User::all();
 
-        $adminUsers = User::where('role', 'admin')->orWhere('role', 'adminsuper')->get();
+        $adminUsers = Notification::all();
 
         $dataPeminjaman = Peminjaman::create([
             'user_id' => $user->id,

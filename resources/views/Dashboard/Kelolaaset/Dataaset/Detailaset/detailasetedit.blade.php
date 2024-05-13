@@ -37,7 +37,7 @@
                             <option value="Terbatas" {{ $asetDetail->klasifikasiAset === 'Terbatas' ? 'selected' : '' }}>Terbatas</option>
                             <option value="Rahasia" {{ $asetDetail->klasifikasiAset === 'Rahasia' ? 'selected' : '' }}>Rahasia</option>
                             <option value="Internal" {{ $asetDetail->klasifikasiAset === 'Internal' ? 'selected' : '' }}>Internal</option>
-                            <option value="Publik" {{ $asetDetail->klasifikasiAset === 'Publik' ? 'selected' : '' }}>Publik</option>
+                            <option value="Public" {{ $asetDetail->klasifikasiAset === 'Public' ? 'selected' : '' }}>Public</option>
                         </select>
                     </div>
                     <div class="" data-hs-input-number="">

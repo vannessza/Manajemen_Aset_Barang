@@ -139,6 +139,28 @@
     const dropdown5 = document.querySelector('#dropdown5');
     const dropdownMenu5 = document.querySelector('#dropdown-menu5');
     
+    dropdown5.addEventListener('click', function(){
+        dropdown5.classList.toggle('dropdown-active5');
+        dropdownMenu5.classList.toggle('hidden');
+    });
+</script>
+<script>
+    //Nvabar Fixed
+    window.onscroll = function(){
+        const header = document.querySelector('header');
+        const fixedNav = header.offsetTop;
+    
+        if(window.pageYOffset > fixedNav){
+            header.classList.add('navbar-fixed');
+        }else{
+            header.classList.remove('navbar-fixed');
+        }
+    }
+    
+    //Dropdown
+    const dropdown5 = document.querySelector('#dropdown5');
+    const dropdownMenu5 = document.querySelector('#dropdown-menu5');
+    
     dropdown4.addEventListener('click', function(){
         dropdown5.classList.toggle('dropdown-active5');
         dropdownMenu5.classList.toggle('hidden');

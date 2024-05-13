@@ -215,7 +215,7 @@ class UserController extends Controller
         }
 
         // Redirect ke halaman indeks permintaan
-        return redirect(route('user.show.daftaraset', $user->id));
+        return redirect(route('user.show.history', $user->id));
     }
 
 
@@ -244,12 +244,30 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
 
-        $peminjaman = Peminjaman::where('user_id', $id)->get();
+        $peminjaman = $user->peminjaman->filter(function ($peminjaman){
+            return $peminjaman->status === "Diterima";
+        });
 
         $jumlahPeminjaman = $user->peminjaman()->count();
         $jumlahPengembalian = $user->pengembalian()->count();
 
         return view('dashboard.akun.user.daftaraset.daftaraset', compact('user', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'),[
+            'title' => 'Detail User',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+    public function history($id){
+        $pengguna = Auth::user();
+
+        $user = User::findOrFail($id);
+
+        $peminjaman = $user->peminjaman()->latest()->get();
+
+        $jumlahPeminjaman = $user->peminjaman()->count();
+        $jumlahPengembalian = $user->pengembalian()->count();
+
+        return view('dashboard.akun.user.daftaraset.history', compact('user', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'),[
             'title' => 'Detail User',
             'pengguna' => $pengguna
         ]);
@@ -264,6 +282,19 @@ class UserController extends Controller
 
         return view('dashboard.akun.user.daftaraset.showdaftaraset', compact('user', 'peminjaman'),[
             'title' => 'Detail Daftar Aset',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+    public function hsitoryshow($user_id, $peminjaman_id){
+        $pengguna = Auth::user();
+
+        $user = User::findOrFail($user_id);
+
+        $peminjaman = Peminjaman::findOrFail($peminjaman_id);
+
+        return view('dashboard.akun.user.daftaraset.showhistory', compact('user', 'peminjaman'),[
+            'title' => 'Detail History',
             'pengguna' => $pengguna
         ]);
     }
@@ -333,7 +364,7 @@ class UserController extends Controller
 
         return view('dashboard.akun.user.daftaraset.uploadformulir', compact('user', 'peminjaman'),[
             'title' => 'Upload Formulir',
-            'pengguna' => 'pengguna'
+            'pengguna' => $pengguna
         ]);
     }
 
@@ -385,7 +416,7 @@ class UserController extends Controller
         ]);
 
         // Redirect ke halaman indeks permintaan
-        return redirect(route('user.show.daftaraset.show', ['user_id' => $user_id, 'peminjaman_id' => $peminjaman_id]));
+        return redirect(route('user.show.daftaraset.showhistory', ['user_id' => $user_id, 'peminjaman_id' => $peminjaman_id]));
     }
 
     public function pengembalian($user_id, $peminjaman_id){
@@ -435,18 +466,6 @@ class UserController extends Controller
         $user = User::findOrFail($user_id);
         $peminjaman = Peminjaman::findOrFail($peminjaman_id);
 
-        // Validasi
-        $request->validate([
-            'image' => 'required|file|mimes:jpeg,png,jpg,gif,pdf,docx'
-        ]);
-
-        // Simpan gambar baru
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('pengembalian-images');
-        } else {
-            $imagePath = null;
-        }
-
         // Atur tanggal pengembalian sebagai hari ini
         $tglPengembalian = Carbon::now()->toDateString();
 
@@ -459,15 +478,14 @@ class UserController extends Controller
             'tglPengembalian' => $tglPengembalian,
             'status' => "Dikembalikan",
             'lokasi_id' => $peminjaman->lokasi_id,
-            'keterangan' => "telah mengisi formulir",
-            'image' => $imagePath,
+            'keterangan' => "",
         ]);
 
         // Hapus peminjaman yang terkait
         Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->delete();
 
         // Redirect ke halaman indeks permintaan
-        return redirect(route('user.show.daftaraset', $user->id));
+        return redirect(route('pengembalian.datapengembalian', $user->id));
     }
 
 

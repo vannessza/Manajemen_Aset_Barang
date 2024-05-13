@@ -79,7 +79,7 @@
                     <a class="inline-flex items-center gap-x-2 hover:text-gray-500 {{ request()->routeIs('user.show.daftaraset') ? 'text-[#008d8d] lg:border-b-2 lg:border-[#008d8d]' : '' }}" href="{{ route('user.show.daftaraset', $user->id) }}">Daftar Aset</a>
                 </div>
                 <div class="snap-center shrink-0 pe-5 sm:pe-8 sm:last:pe-0">
-                    <a class="inline-flex items-center gap-x-2 hover:text-gray-500" href="#">History</a>
+                    <a class="inline-flex items-center gap-x-2 hover:text-gray-500 {{ request()->routeIs('user.show.history') ? 'text-[#008d8d] lg:border-b-2 lg:border-[#008d8d]' : '' }}" href="{{ route('user.show.history', $user->id) }}">History</a>
                 </div>
             </div>
         </nav>               

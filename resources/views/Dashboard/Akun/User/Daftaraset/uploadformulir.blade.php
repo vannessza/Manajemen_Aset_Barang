@@ -5,7 +5,7 @@
 <div class="container mt-36 mb-10">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 m-auto">
         <div class="flex p-6">
-            <a href="{{ route('user.show.daftaraset.show', ['user_id' => $user->id, 'peminjaman_id' => $peminjaman->id]) }}">
+            <a href="{{ route('user.show.daftaraset.showhistory', ['user_id' => $user->id, 'peminjaman_id' => $peminjaman->id]) }}">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path d="M32 15H3.41l8.29-8.29-1.41-1.42-10 10a1 1 0 0 0 0 1.41l10 10 1.41-1.41L3.41 17H32z" data-name="4-Arrow Left"/></svg>
             </a>
            

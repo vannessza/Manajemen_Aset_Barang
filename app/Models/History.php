@@ -14,10 +14,10 @@ class History extends Model
 
     public function asetDetail()
     {
-        return $this->belongsTo(AsetDetail::class);
+        return $this->belongsTo(AsetDetail::class, 'user_detail_id');
     }
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
