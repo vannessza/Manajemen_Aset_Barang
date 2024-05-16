@@ -26,17 +26,26 @@
                             @foreach ($uniqueUsers as $pe)
                                 <option value="{{ $pe->user->id }}" {{ $pe->user->id == $pengembalian->user_id ? 'selected' : '' }}>{{ $pe->user->name }}</option>
                             @endforeach
-                        </select>                
+                        </select>
+                        @error('namaPengembali')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>                                        
                     <div class="sm:col-span-2">
                         <label for="namaAset" class="block text-sm font-medium mb-2">Nama Aset</label>
                         <select id="namaAset" name="namaAset" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
                             <option value="">Pilih Nama Aset yang dikembalikan</option>
                         </select>
+                        @error('namaAset')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="sm:col-span-2">
                         <label for="tglPengembalian" class="block mb-2 text-sm font-medium text-gray-90">Tanggal Pengembalian</label>
                         <input type="date" name="tglPengembalian" id="tglPengembalian" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " placeholder="Product brand" required="" value="{{ $pengembalian->tglPengembalian }}">
+                        @error('tglPengembalian')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="sm:col-span-2">
                         <label for="lokasi" class="block mb-2 text-sm font-medium text-gray-900">Lokasi Pengembalian</label>
@@ -46,15 +55,19 @@
                                 <option value="{{ $lo->id }}" {{ $lo->id == $pengembalian->lokasi_id ? 'selected' : '' }}>{{ $lo->alamat }}</option>
                             @endforeach
                         </select>
+                        @error('lokasi')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="sm:col-span-2">
                         <label for="keterangan" class="block mb-2 text-sm font-medium text-gray-900">Keterangan</label>
-                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." value="{{ $pengembalian->keterangan }}">{{ $pengembalian->keterangan }}</textarea>                    
+                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." value="{{ $pengembalian->keterangan }}">{{ $pengembalian->keterangan }}</textarea>
+                        @error('keterangan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
                     <div class="max-w-sm">
                         <label class="block">
-                            <input type="hidden" name="oldImage" value="{{ $pengembalian->image }}">
                             <span class="sr-only">Choose profile photo</span>
                             <input type="file" name="image" id="image" class="block w-full text-sm text-gray-500
                                 file:me-4 file:py-2 file:px-4
@@ -69,7 +82,6 @@
                             " onchange ="previewImage()">
                         </label>
                     </div>
-
                 </div>
                 <button type="submit" class="inline-block w-full rounded bg-[#B8BC00] px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong" data-twe-ripple-init data-twe-ripple-color="light">
                     Edit
@@ -106,7 +118,7 @@
 
             @foreach ($peminjaman->where('status', 'Diterima')->where('user_id', $pengembalian->user_id) as $pe)
                 var option = document.createElement('option');
-                option.value = "{{ $pe->asetDetail->id }}"; // Ganti 'nama' dengan kolom yang menyimpan id aset
+                option.value = "{{ $pe->id }}"; // Ganti 'nama' dengan kolom yang menyimpan id aset
                 option.text = "{{ $pe->asetDetail->namaAset }}";
                 @if ($pe->kodePeminjaman == $pengembalian->kodePengembalian)
                     option.selected = true; // Pilih opsi jika kode peminjaman sama dengan kode pengembalian

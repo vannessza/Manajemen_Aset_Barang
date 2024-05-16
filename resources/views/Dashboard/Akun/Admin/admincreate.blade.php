@@ -16,6 +16,17 @@
         <div class="mx-auto block max-w-xl rounded-lg bg-white p-6 shadow-4">
             <form action="{{ route('admin.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Oops!</strong>
+                        <span class="block sm:inline"> Ada beberapa masalah dengan input Anda.</span>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     
                     <div class="sm:col-span-2">

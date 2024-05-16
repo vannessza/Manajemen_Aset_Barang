@@ -16,6 +16,7 @@
         <div class="mx-auto block max-w-xl rounded-lg bg-white p-6 shadow-4">
             <form action="{{ route('dataaset.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
+                
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label for="aset" class="block mb-2 text-sm font-medium text-gray-90">Aset</label>

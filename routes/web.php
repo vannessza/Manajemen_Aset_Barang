@@ -30,6 +30,7 @@ Route::get('/home', function(){
 
 Route::get('/aset', [AsetController::class, 'index'])->name('aset.index');
 Route::get('/aset/show/{id}', [AsetController::class, 'show'])->name('aset.show');
+Route::get('/aset/kategori/{id}', [AsetController::class, 'kategori'])->name('kategori.index');
 Route::get('/aset/show/pinjam/{id}', [PeminjamanController::class, 'createpinjamuser'])->name('aset.pinjam');
 Route::post('/aset/show/store/{id}', [PeminjamanController::class, 'storepinjamuser'])->name('aset.store');
 // data aset
@@ -43,7 +44,7 @@ Route::get('/data aset/delete/{id}', [DataAsetController::class, 'delete'])->nam
 Route::get('/data aset/detail aset/{id}', [AsetDetailController::class, 'index'])->name('detailaset.index');
 Route::get('/data aset/detail aset/create/{id}', [AsetDetailController::class, 'create'])->name('detailaset.create');
 Route::post('/data aset/detail aset/store/{id}', [AsetDetailController::class, 'store'])->name('detailaset.store');
-Route::post('/data aset/detail aset/show/{id}', [AsetDetailController::class, 'show'])->name('detailaset.show');
+Route::get('/data aset/detail aset/{aset}/{asetDetail}/show', [AsetDetailController::class, 'show'])->name('detailaset.show');
 Route::get('/data aset/detail aset/{aset}/{asetDetail}/edit', [AsetDetailController::class, 'edit'])->name('detailaset.edit');
 Route::patch('/data aset/detail aset/{aset}/{asetDetail}/update', [AsetDetailController::class, 'update'])->name('detailaset.update');
 Route::get('/data aset/detail aset/{aset}/{asetDetail}/delete', [AsetDetailController::class, 'delete'])->name('detailaset.delete');
@@ -105,7 +106,7 @@ Route::patch('/penghancuran/{id}', [PenghancuranController::class, 'update'])->n
 //Request
 Route::get('/request', [RequestController::class, 'index'])->name('request.index');
 Route::get('/request/terima peminjaman/{id}', [RequestController::class, 'terimapeminjaman'])->name('request.terima.peminjaman');
-Route::patch('/request/terima peminjaman/update/{id}', [RequestController::class, 'terimapeminjamanupdate'])->name('request.update.terima.peminjaman');
+Route::patch('/request/terima-peminjaman/update/{id}', [RequestController::class, 'terimapeminjamanupdate'])->name('request.update.terima.peminjaman');
 Route::get('/request/tolak peminjaman/{id}', [RequestController::class, 'tolakpeminjaman'])->name('request.tolak.peminjaman');
 Route::patch('/request/tolak peminjaman/update/{id}', [RequestController::class, 'tolakpeminjamanupdate'])->name('request.update.tolak.peminjaman');
 Route::get('/request/peminjaman/show/{id}', [RequestController::class, 'showpeminjaman'])->name('request.show.peminjaman');

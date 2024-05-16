@@ -5,7 +5,7 @@
 <div class="container mt-36 mb-10">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 m-auto">
         <div class="flex p-6">
-            <a href="{{ route('peminjaman.index') }}">
+            <a href="{{ route('peminjaman.history') }}">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path d="M32 15H3.41l8.29-8.29-1.41-1.42-10 10a1 1 0 0 0 0 1.41l10 10 1.41-1.41L3.41 17H32z" data-name="4-Arrow Left"/></svg>
             </a>
            
@@ -17,6 +17,17 @@
         <div class="mx-auto block max-w-xl rounded-lg bg-white p-6 shadow-4">
             <form action="{{ route('peminjaman.update', $peminjaman->id) }}" method="post" enctype="multipart/form-data">
                 @csrf
+                    @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Oops!</strong>
+                        <span class="block sm:inline"> Ada beberapa masalah dengan input Anda.</span>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <input type="hidden" name="_method" value="PATCH">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
@@ -34,6 +45,9 @@
                             @foreach ($user as $us)
                                 <option value="{{ $us->id }}" {{ $peminjaman->user_id == $us->id ? 'selected' : '' }}>{{ $us->name }}</option>
                             @endforeach
+                            @error('namaPeminjam')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </select>
                     </div>
                     <div class="">
@@ -43,6 +57,9 @@
                             @foreach ($aset as $as)
                                 <option value="{{ $as->id }}" {{ $peminjaman->aset_id == $as->id ? 'selected' : '' }}>{{ $as->namaAset }}</option>
                             @endforeach
+                            @error('aset')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </select>
                     </div>
                     <div class="">
@@ -54,11 +71,17 @@
                                     <option value="{{ $detail->id }}" {{ $peminjaman->nama_aset_id == $detail->id ? 'selected' : '' }}>{{ $detail->namaAset }}</option>
                                 @endforeach
                             @endif
+                            @error('namaAset')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </select>
                     </div>
                     <div class="sm:col-span-2">
                         <label for="tglPeminjaman" class="block mb-2 text-sm font-medium text-gray-900">Tanggal Peminjaman</label>
                         <input type="date" name="tglPeminjaman" id="tglPeminjaman" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Product brand" required value="{{ $peminjaman->tglPeminjaman ?? old('tglPeminjaman') }}">
+                        @error('tglPeminjaman')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>                                                            
                     <div class="sm:col-span-2">
                         <label for="lokasi" class="block mb-2 text-sm font-medium text-gray-900">Lokasi Peminjaman</label>
@@ -67,17 +90,23 @@
                             @foreach ($lokasi as $lo)
                                 <option value="{{ $lo->id }}" {{ $peminjaman->lokasi_id == $lo->id ? 'selected' : '' }}>{{ $lo->alamat }}</option>
                             @endforeach
+                            @error('lokasi')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </select>
                     </div>
                     <div class="sm:col-span-2">
                         <label for="keterangan" class="block mb-2 text-sm font-medium text-gray-900">Keterangan</label>
-                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required value="{{ $peminjaman->keterangan }}">{{ $peminjaman->keterangan }}</textarea>                    
+                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required value="{{ $peminjaman->keterangan }}">{{ $peminjaman->keterangan }}</textarea>  
+                        @error('keterangan')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror                  
                     </div>
                     
                     <div class="max-w-sm">
                         <label class="block">
                             <input type="hidden" name="oldImage" value="{{ $peminjaman->image }}">
-                            <span class="sr-only">Choose profile photo</span>
+                            <span class="sr-only">Choose file</span>
                             <input type="file" name="image" id="image" class="block w-full text-sm text-gray-500
                                 file:me-4 file:py-2 file:px-4
                                 file:rounded-lg file:border-0
@@ -104,19 +133,19 @@
     document.getElementById('aset').addEventListener('change', function() {
         var selectedAsetId = this.value;
         var namaAsetDropdown = document.getElementById('namaAset');
-
+        
         // Menghapus semua opsi saat ini
         namaAsetDropdown.innerHTML = '';
-
+        
         // Menambahkan opsi default
         var defaultOption = document.createElement('option');
         defaultOption.text = 'Pilih Nama Aset';
         namaAsetDropdown.add(defaultOption);
-
+        
         // Filter dan tambahkan opsi yang sesuai
         @foreach ($aset as $as)
             if ({{ $as->id }} == selectedAsetId) {
-                @foreach ($as->asetDetail as $detail)
+                @foreach ($as->asetDetail()->where('status', 'Tersedia')->get() as $detail)
                     var option = document.createElement('option');
                     option.value = "{{ $detail->id }}";
                     option.text = "{{ $detail->namaAset }}";

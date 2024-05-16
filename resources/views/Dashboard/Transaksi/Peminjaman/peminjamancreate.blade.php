@@ -72,7 +72,7 @@
                     <div class="max-w-sm mb-2">
                         <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Upload Formulir</label>
                         <label class="block">
-                            <span class="sr-only">Choose profile photo</span>
+                            <span class="sr-only">Choose file</span>
                             <input type="file" name="image" id="image" class="block w-full text-sm text-gray-500
                                 file:me-4 file:py-2 file:px-4
                                 file:rounded-lg file:border-0
@@ -111,7 +111,7 @@
         // Filter dan tambahkan opsi yang sesuai
         @foreach ($aset as $as)
             if ({{ $as->id }} == selectedAsetId) {
-                @foreach ($as->asetDetail as $detail)
+                @foreach ($as->asetDetail()->where('status', 'Tersedia')->get() as $detail)
                     var option = document.createElement('option');
                     option.value = "{{ $detail->id }}";
                     option.text = "{{ $detail->namaAset }}";

@@ -20,6 +20,16 @@
                     <div>
                         <form action="/login" method="post" class="flex flex-col gap-4 px-10">
                             @csrf
+                            @if ($errors->any())
+                                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                    <strong class="font-bold">Oops!</strong>
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                             <label for="email">
                                 <span class="block font-semibold mb-1 after:content-['*']
                                 after:text-pink-500 after:ml-0.5" >Email</span>
@@ -29,10 +39,11 @@
                                 invalid:text-pink-600
                                 invalid:focus:ring-pink-700
                                 invalid:focus:border-pink-700 peer w-full" type="email" name="email" id="email" placeholder="Masukan Email">
-                                <p class="text-sm m-1 text-pink-700
-                                    invisible peer-invalid:visible">Email tidak valid</p>
+                                @error('email')
+                                    <p class="text-sm m-1 text-red-700">{{ $message }}</p>
+                                @enderror
                             </label>
-                            <label for="email">
+                            <label for="password">
                                 <span class="block font-semibold mb-1 after:content-['*']
                                 after:text-pink-500 after:ml-0.5" >Password</span>
                                 <input class="p-2 rounded-xl border focus:ring-1
@@ -41,17 +52,15 @@
                                 invalid:text-pink-600
                                 invalid:focus:ring-pink-700
                                 invalid:focus:border-pink-700 peer w-full" type="password" name="password" id="password" placeholder="Masukan Password">
-                                <p class="text-sm m-1 text-pink-700
-                                    invisible peer-invalid:visible">Password tidak valid</p>
+                                @error('password')
+                                    <p class="text-sm m-1 text-red-700">{{ $message }}</p>
+                                @enderror
                             </label>
                             <div class="flex justify-center pb-3">
                                 <button class="bg-[#008d8d] px-5
                                 py-2 rounded-full text-white font-semibold
                                 font-inter block w-40 xl:w-56 hover:bg-[#006c6c]">Login</button>
                             </div>
-                            @error('error')
-                                <p class="text-sm m-1 text-red-700">{{ $message }}</p>
-                            @enderror
                         </form>
                     </div>
                 </div>

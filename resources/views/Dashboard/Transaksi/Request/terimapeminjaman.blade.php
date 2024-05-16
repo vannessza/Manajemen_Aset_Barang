@@ -17,11 +17,25 @@
         <div class="mx-auto block max-w-xl rounded-lg bg-white p-6 shadow-4">
             <form action="{{ route('request.update.terima.peminjaman', $peminjaman->id) }}" method="post" enctype="multipart/form-data">
                 @csrf
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Oops!</strong>
+                        <span class="block sm:inline"> Ada masalah.</span>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <input type="hidden" name="_method" value="PATCH">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label for="keterangan" class="block mb-2 text-sm font-medium text-gray-900">Keterangan</label>
-                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required></textarea>                    
+                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required></textarea>          
+                        @error('keterangan')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror          
                     </div>
                     <div class="sm:col-span-2">
                         <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Upload Formulir</label>
@@ -35,6 +49,9 @@
                             </div>
                             <input id="dropzone-file" type="file" class="hidden" name="image"/>
                         </label>
+                        @error('image')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror 
                     </div> 
 
                 </div>

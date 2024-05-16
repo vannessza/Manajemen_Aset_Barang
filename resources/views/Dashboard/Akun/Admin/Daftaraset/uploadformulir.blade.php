@@ -17,6 +17,17 @@
         <div class="mx-auto block max-w-xl rounded-lg bg-white p-6 shadow-4">
             <form action="{{ route('admin.show.daftaraset.uploadformulir.update', ['user_id' => $admin->id, 'peminjaman_id' => $peminjaman->id]) }}" method="post" enctype="multipart/form-data">
                 @csrf
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Oops!</strong>
+                        <span class="block sm:inline"> Ada masalah.</span>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <input type="hidden" name="_method" value="PATCH">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">

@@ -46,15 +46,24 @@ class PeminjamanController extends Controller
             'pengguna' => $user
         ]);
     }
-    
-    public function peminjaman(){
+    public function peminjaman(Request $request)
+    {
         $pengguna = Auth::user();
-        $peminjaman = Peminjaman::all();
-        $peminjamanDiterima = $peminjaman->filter(function ($peminjaman) {
-            return $peminjaman->status === 'Diterima';
-        });
+        $search = $request->input('search');
+
+        $peminjaman = Peminjaman::where('status', 'Diterima')
+            ->when($search, function ($query, $search) {
+                return $query->where('kodePeminjaman', 'like', '%' . $search . '%')
+                            ->orWhereHas('user', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('asetDetail', function ($query) use ($search) {
+                                $query->where('namaAset', 'like', '%' . $search . '%');
+                            });
+            })->paginate(10);
+
         return view('dashboard.transaksi.peminjaman.peminjaman', [
-            'peminjaman' => $peminjamanDiterima,
+            'peminjaman' => $peminjaman,
             'title' => 'Peminjaman',
             'pengguna' => $pengguna
         ]);
@@ -71,11 +80,23 @@ class PeminjamanController extends Controller
             'pengguna' => $user
         ]);
     }
-
-    public function history(){
+    public function history(Request $request)
+    {
         $user = Auth::user();
-        $peminjaman = Peminjaman::latest()->get();
-    
+        $search = $request->input('search');
+
+        $peminjaman = Peminjaman::latest()
+            ->when($search, function ($query, $search) {
+                return $query->where('kodePeminjaman', 'like', '%' . $search . '%')
+                            ->orWhereHas('user', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('asetDetail', function ($query) use ($search) {
+                                $query->where('namaAset', 'like', '%' . $search . '%');
+                            });
+            })
+            ->paginate(10);
+
         return view('dashboard.transaksi.peminjaman.history', compact('peminjaman', 'user'), [
             'title' => 'Peminjaman',
             'pengguna' => $user
@@ -102,7 +123,7 @@ class PeminjamanController extends Controller
         $user = User::all();
         $lokasi = Lokasi::all();
         $aset = Aset::with('AsetDetail')->get();
-
+        
         return view('dashboard.transaksi.peminjaman.peminjamancreate', compact('user', 'aset', 'lokasi'),[
             'title' => 'Create Peminjaman',
             'pengguna' => $pengguna
@@ -174,7 +195,7 @@ class PeminjamanController extends Controller
         if ($status === 'Diterima') {
             $history = History::create([
                 'user_id' => $request->namaPeminjam,
-                'user_detail_id' => $request->namaAset,
+                'aset_detail_id' => $request->namaAset,
                 'action' => 'Peminjaman',
                 'keterangan' => 'Peminjaman ' . $aset->namaAset . ' diterima pada ' . now()->toDateTimeString()
             ]);
@@ -190,28 +211,27 @@ class PeminjamanController extends Controller
             $data['keterangan'] = $dataPeminjaman->keterangan;
         
             dispatch(new SendEmailRequestRespon($data));
-        }
-
-        // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+                // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
         $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $request->namaAset)
-                            ->where('status', 'Diterima')
-                            ->count();
-        // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
-        $asetDetail = AsetDetail::findOrFail($request->namaAset);
+        ->where('status', 'Diterima')
+        ->count();
+            // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+            $asetDetail = AsetDetail::findOrFail($request->namaAset);
 
-        // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
-        if ($jumlahPeminjaman == $asetDetail->jumlah) {
+            // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+            if ($jumlahPeminjaman == $asetDetail->jumlah) {
             $asetDetail->update([
-                'status' => 'Tidak Tersedia'
+            'status' => 'Tidak Tersedia'
             ]);
-        } else {
+            } else {
             $asetDetail->update([
-                'status' => 'Tersedia'
+            'status' => 'Tersedia'
             ]);
+            }
+            return redirect(route('peminjaman.datapeminjaman'));
+        }else{
+            return redirect(route('peminjaman.history'));
         }
-
-        // Redirect ke halaman indeks peminjaman
-        return redirect(route('peminjaman.datapeminjaman'));
     }
 
 
@@ -362,6 +382,32 @@ class PeminjamanController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'namaPeminjam' => 'required',
+            'aset' => 'required',
+            'namaAset' => 'required',
+            'tglPeminjaman' => 'required',
+            'lokasi' => 'required',
+            'keterangan' => 'required',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,docx|max:2048',
+        ], [
+            'namaPeminjam.required' => 'Kolom nama peminjam wajib diisi.',
+            'aset.required' => 'Kolom aset wajib diisi.',
+            'namaAset.required' => 'Kolom nama aset wajib diisi.',
+            'tglPeminjaman.required' => 'Kolom tanggal peminjaman wajib diisi.',
+            'lokasi.required' => 'Kolom lokasi wajib diisi.',
+            'keterangan.required' => 'Kolom keterangan wajib diisi.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format file harus jpeg, png, jpg, atau gif.',
+            'image.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
+        ]);
+        
+        // Cek status aset detail
+        $asetDetail = AsetDetail::findOrFail($request->namaAset);
+        if ($asetDetail->status == 'Tidak Tersedia') {
+            return back()->withErrors(['namaAset' => 'Aset yang dipilih tidak tersedia.']);
+        }
+
         $peminjaman = Peminjaman::findOrFail($id);
 
         $oldAsetId = $peminjaman->nama_aset_id;
@@ -393,24 +439,13 @@ class PeminjamanController extends Controller
 
         $status = $request->image ? "Diterima" : "Diproses";
 
-        // Mendapatkan jumlah peminjaman dengan nama_aset_id yang sama yang memiliki status 'Diterima'
-        $jumlahPeminjamanDiterima = Peminjaman::where('nama_aset_id', $peminjaman->nama_aset_id)
-                    ->where('status', 'Diterima')
-                    ->count();
+        // // Mendapatkan jumlah peminjaman dengan nama_aset_id yang sama yang memiliki status 'Diterima'
+        // $jumlahPeminjamanDiterima = Peminjaman::where('nama_aset_id', $peminjaman->nama_aset_id)
+        //             ->where('status', 'Diterima')
+        //             ->count();
 
-        // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
-        $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
-
-        // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman yang diterima sama dengan jumlah aset pada AsetDetail
-        if ($jumlahPeminjamanDiterima == $asetDetail->jumlah) {
-            $asetDetail->update([
-                'status' => 'Tidak Tersedia'
-            ]);
-        } else {
-            $asetDetail->update([
-                'status' => 'Tersedia'
-            ]);
-        }
+        // // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+        // $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
 
         $peminjaman->update([
             'user_id' => $request->namaPeminjam,
@@ -424,49 +459,47 @@ class PeminjamanController extends Controller
             'image' => $imagePath
         ]);
 
-        // hapus history lama
-        History::where('user_id', $peminjaman->user_id)
-            ->where('user_detail_id', $peminjaman->nama_aset_id)
-            ->delete();
-
-            if ($status === 'Diterima') {
-                $history = History::create([
-                    'user_id' => $request->namaPeminjam,
-                    'user_detail_id' => $request->namaAset,
-                    'action' => 'Peminjaman',
-                    'keterangan' => 'Peminjaman ' . $aset->namaAset . ' diterima pada ' . now()->toDateTimeString()
-                ]);
-    
-                $data['email'] = $peminjaman->user->email;
-                $data['respon'] = "Diterima";
-                $data['request'] = "Peminjaman";
-                $data['name'] = $peminjaman->user->name;
-                $data['namaAset'] = $peminjaman->AsetDetail->namaAset;
-                $data['kategori'] = $peminjaman->aset->namaAset;
-                $data['tanggal'] = $peminjaman->tglPeminjaman;
-                $data['lokasi'] = $peminjaman->lokasi->alamat;
-                $data['keterangan'] = $peminjaman->keterangan;
-            
-                dispatch(new SendEmailRequestRespon($data));
-            }
-            
-        // buat history baru
-        $history = History::create([
-            'user_id' => $peminjaman->user_id,
-            'user_detail_id' => $peminjaman->nama_aset_id,
-            'action' => 'Peminjaman',
-            'keterangan' => 'Peminjaman ' . $aset->namaAset . ' diperbarui pada ' . now()->toDateTimeString()
-        ]);
-
-        // maka kembalikan statusnya menjadi "Tersedia"
-        if ($oldAsetId != $request->namaAset && Peminjaman::where('nama_aset_id', $oldAsetId)->count() == 0) {
-            $oldAsetDetail = AsetDetail::findOrFail($oldAsetId);
-            $oldAsetDetail->update([
-                'status' => 'Tersedia'
+        // Membuat log kegiatan (history) setelah peminjaman diterima
+        if ($status === 'Diterima') {
+            $history = History::create([
+                'user_id' => $request->namaPeminjam,
+                'aset_detail_id' => $request->namaAset,
+                'action' => 'Peminjaman',
+                'keterangan' => 'Peminjaman ' . $aset->namaAset . ' diterima pada ' . now()->toDateTimeString()
             ]);
-        }
 
-        return redirect(route('peminjaman.index'));
+            $data['email'] = $peminjaman->user->email;
+            $data['respon'] = "Diterima";
+            $data['request'] = "Peminjaman";
+            $data['name'] = $peminjaman->user->name;
+            $data['namaAset'] = $peminjaman->AsetDetail->namaAset;
+            $data['kategori'] = $peminjaman->aset->namaAset;
+            $data['tanggal'] = $peminjaman->tglPeminjaman;
+            $data['lokasi'] = $peminjaman->lokasi->alamat;
+            $data['keterangan'] = $peminjaman->keterangan;
+        
+            dispatch(new SendEmailRequestRespon($data));
+                // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $request->namaAset)
+            ->where('status', 'Diterima')
+            ->count();
+            // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+            $asetDetail = AsetDetail::findOrFail($request->namaAset);
+
+            // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+            if ($jumlahPeminjaman == $asetDetail->jumlah) {
+            $asetDetail->update([
+            'status' => 'Tidak Tersedia'
+            ]);
+            } else {
+            $asetDetail->update([
+            'status' => 'Tersedia'
+            ]);
+            }
+            return redirect(route('peminjaman.datapeminjaman'));
+        }else{
+            return redirect(route('peminjaman.history'));
+        }
     }
 
 
@@ -476,10 +509,28 @@ class PeminjamanController extends Controller
     public function delete($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->delete();
 
+        $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
+        
+        
         if ($peminjaman->image) {
             Storage::delete($peminjaman->image);
+        }
+
+        $peminjaman->delete();
+
+        $jumlahPeminjamanDiterima = Peminjaman::where('nama_aset_id', $peminjaman->nama_aset_id)
+                    ->where('status', 'Diterima')
+                    ->count();
+
+        if ($jumlahPeminjamanDiterima == $asetDetail->jumlah) {
+            $asetDetail->update([
+                'status' => 'Tidak Tersedia'
+            ]);
+        } else {
+            $asetDetail->update([
+                'status' => 'Tersedia'
+            ]);
         }
 
         return redirect()->route('peminjaman.history');

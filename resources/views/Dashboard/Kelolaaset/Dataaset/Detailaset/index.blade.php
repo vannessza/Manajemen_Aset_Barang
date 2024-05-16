@@ -5,6 +5,15 @@
 <div class="container mt-36 mb-10">
     <div class="bg-white w-auto rounded-xl shadow-xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div>
+          <div class="flex mb-10">
+              <a href="{{ route('dataaset.index', $aset->id) }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path d="M32 15H3.41l8.29-8.29-1.41-1.42-10 10a1 1 0 0 0 0 1.41l10 10 1.41-1.41L3.41 17H32z" data-name="4-Arrow Left"/></svg>
+              </a>
+            
+              <div class="m-auto">
+                  <h1 class="text-2xl font-semibold text-gray-900 mr-8">Detail Aset</h1>
+              </div>
+          </div>
             <div>
                 <h1 class="text-xl font-bold text-gray-800">Detail Aset Register</h1>
             </div>
@@ -96,7 +105,7 @@
                               text-red-600 font-semibold
                           @endif">{{ $ad['status'] }}</td>
                           <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                            <a href="{{ route('detailaset.show', $ad->id) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
+                            <a href="{{ route('detailaset.show', ['aset' => $aset->id, 'asetDetail' => $ad->id]) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:pointer-events-none">Detail</a>
                             <a href="{{ route('detailaset.edit', ['aset' => $aset->id, 'asetDetail' => $ad->id]) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-green-500 hover:text-green-800 disabled:opacity-50 disabled:pointer-events-none">Edit</a>
                             <a href="{{ route('detailaset.delete', ['aset' => $aset->id, 'asetDetail' => $ad->id]) }}" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-500 hover:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</a>
                           </td>

@@ -16,20 +16,31 @@ class LoginController extends Controller
         ]);
     }
 
-    public function authenticate(Request $request){
-        $credentials = $request->validate([
+    public function authenticate(Request $request)
+    {
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
+        ], [
+            'email.required' => 'Kolom email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Kolom password wajib diisi.',
         ]);
 
-        if(Auth::attempt($credentials)){
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             return redirect()->intended('/dashboard');
         }
 
-        return back()->with('LoginError', 'Login Failed!');
+        // Pesan kesalahan jika autentikasi gagal
+        return back()->withErrors([
+            'failed' => 'Email atau password salah.',
+        ])->withInput($request->only('email'));
     }
+
 
     public function logout(Request $request){
         Auth::logout();

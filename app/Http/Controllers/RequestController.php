@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Aset;
 use App\Models\AsetDetail;
 use App\Models\History;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -119,25 +120,34 @@ class RequestController extends Controller
     }
     public function terimapeminjamanupdate(Request $request, $id)
     {   
+
+        $request->validate([
+            'keterangan' => 'required',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,docx|max:2048',
+        ], [
+            'keterangan.required' => 'Kolom keterangan wajib diisi.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format file harus jpeg, png, jpg, atau gif.',
+            'image.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
+        ]);
+
         // Mencari peminjaman berdasarkan ID
+        
         $peminjaman = Peminjaman::findOrFail($id);
+        
+        
+        // Cek status aset detail
+        $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
+        if ($asetDetail->status == 'Tidak Tersedia') {
+            return back()->withErrors(['namaAset' => 'Aset yang dipilih tidak tersedia.']);
+        }
 
-        // Membuat nomor urut barang baru dengan format 4 digit menggunakan ID
-        $nomerUrutBarang = str_pad($peminjaman->id, 4, '0', STR_PAD_LEFT);
-
-        // Mendapatkan kode aset, kode divisi, dan kode lokasi
-        $aset = Aset::findOrFail($peminjaman->aset_id);
-        $divisi = User::findOrFail($peminjaman->user_id)->profile->divisi->kodeDivisi;
-        $lokasi = Lokasi::findOrFail($peminjaman->lokasi_id);
+        // Inisialisasi variabel $kodePeminjaman dan $imagePath
+        $kodePeminjaman = $peminjaman->kodePeminjaman;
+        $imagePath = $peminjaman->image;
 
         // Menentukan status berdasarkan apakah ada gambar atau tidak
         $status = $request->hasFile('image') ? "Diterima" : "Diproses";
-
-        // Validasi input
-        $request->validate([
-            'keterangan' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
-        ]);
 
         // Jika ada file gambar di-upload, simpan gambar tersebut dan perbarui kode peminjaman
         if ($request->hasFile('image')) {
@@ -150,11 +160,11 @@ class RequestController extends Controller
             $imagePath = $request->file('image')->store('peminjaman-images');
 
             // Membuat kode peminjaman dengan format yang diminta
+            $nomerUrutBarang = str_pad($peminjaman->id, 4, '0', STR_PAD_LEFT);
+            $aset = Aset::findOrFail($peminjaman->aset_id);
+            $divisi = User::findOrFail($peminjaman->user_id)->profile->divisi->kodeDivisi;
+            $lokasi = Lokasi::findOrFail($peminjaman->lokasi_id);
             $kodePeminjaman = $nomerUrutBarang . '/' . $aset->kodeAset . '/' . $divisi . '/' . $lokasi->kodeLokasi;
-        } else {
-            // Jika tidak ada gambar yang diunggah, gunakan kode peminjaman yang sudah ada
-            $imagePath = $peminjaman->image;
-            $kodePeminjaman = $peminjaman->kodePeminjaman;
         }
 
         // Memperbarui data peminjaman
@@ -165,32 +175,15 @@ class RequestController extends Controller
             'kodePeminjaman' => $kodePeminjaman,
         ]);
 
-        // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
-        $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $peminjaman->nama_aset_id)->count();
-
-        // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
-        $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
-
-        // Simpan history
-        if ($status === "Diterima") {
+        // Membuat log kegiatan (history) setelah peminjaman diterima
+        if ($status === 'Diterima') {
             $history = History::create([
                 'user_id' => $peminjaman->user_id,
-                'user_detail_id' => $peminjaman->nama_aset_id,
+                'aset_detail_id' => $peminjaman->nama_aset_id,
                 'action' => 'Peminjaman',
-                'keterangan' => 'Peminjaman ' . $peminjaman->aset->namaAset . ' dibuat pada ' . now()->toDateTimeString()
+                'keterangan' => 'Peminjaman ' . $aset->namaAset . ' diterima pada ' . now()->toDateTimeString()
             ]);
-        }
 
-        // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
-        if ($jumlahPeminjaman == $asetDetail->jumlah) {
-            $asetDetail->update([
-                'status' => 'Tidak Tersedia'
-            ]);
-        } else {
-            $asetDetail->update([
-                'status' => 'Tersedia'
-            ]);
-        }
             $data['email'] = $peminjaman->user->email;
             $data['respon'] = "Diterima";
             $data['request'] = "Peminjaman";
@@ -202,21 +195,48 @@ class RequestController extends Controller
             $data['keterangan'] = $peminjaman->keterangan;
         
             dispatch(new SendEmailRequestRespon($data));
+                // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $peminjaman->nama_aset_id)
+            ->where('status', 'Diterima')
+            ->count();
+            // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+            $asetDetail = AsetDetail::findOrFail($peminjaman->nama_aset_id);
 
-        // Redirect ke halaman indeks permintaan
+            // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+            if ($jumlahPeminjaman >= $asetDetail->jumlah) {
+            $asetDetail->update([
+            'status' => 'Tidak Tersedia'
+            ]);
+            } else {
+            $asetDetail->update([
+            'status' => 'Tersedia'
+            ]);
+            }
+        }
         return redirect(route('request.index'));
     }
 
 
 
+
     public function terimapengembaliannupdate(Request $request, $id)
     {
-        $pengembalian = Pengembalian::findOrFail($id);
         // Validasi input
         $request->validate([
-            'keterangan' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
+            'keterangan' => 'required',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,docx|max:2048',
+        ], [
+            'keterangan.required' => 'Kolom keterangan wajib diisi.',
+            'image.mimes' => 'Format file harus jpeg, png, jpg, gif, pdf, atau docx.',
+            'image.max' => 'Ukuran file tidak boleh lebih dari 2MB.',
         ]);
+
+        $pengembalian = Pengembalian::findOrFail($id);
+
+        // Cek status dikembalikan sebelum pembaruan
+        if ($pengembalian->status == 'Dikembalikan') {
+            return back()->withErrors('Aset sudah Dikembalikan.');
+        }
 
         // Menentukan status berdasarkan apakah ada gambar atau tidak
         $status = $request->hasFile('image') ? "Dikembalikan" : "Diproses";
@@ -239,32 +259,20 @@ class RequestController extends Controller
             'status' => $status,
         ]);
 
-        // Jika status adalah "Dikembalikan", ubah status AsetDetail menjadi "Tersedia" jika jumlah peminjaman sama dengan jumlah aset detailnya
-        if ($status === "Dikembalikan") {
-            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $pengembalian->nama_aset_id)
-                ->where('status', 'Diterima')
-                ->count();
+        if ($status === 'Dikembalikan') {
+            $peminjaman = Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->first();
 
-            $asetDetail = AsetDetail::findOrFail($pengembalian->nama_aset_id);
-            if ($jumlahPeminjaman == $asetDetail->jumlah) {
-                $asetDetail->update([
-                    'status' => 'Tersedia'
-                ]);
-            }
-        }
-        
-
-        // Simpan history
-        if ($status === "Dikembalikan") {
             $history = History::create([
                 'user_id' => $pengembalian->user_id,
-                'user_detail_id' => $pengembalian->nama_aset_id,
+                'aset_detail_id' => $pengembalian->nama_aset_id,
                 'action' => 'Pengembalian',
                 'keterangan' => 'Pengembalian ' . $pengembalian->aset->namaAset . ' dibuat pada ' . now()->toDateTimeString()
-            ]); 
-            // Menghapus peminjaman berdasarkan  kode peminjaman
-            }
-        
+            ]);
+
+            $peminjaman->update([
+                'status' => 'Dikembalikan'
+            ]);
+
             $data['email'] = $pengembalian->user->email;
             $data['respon'] = "Diterima";
             $data['request'] = "Pengembalian";
@@ -274,11 +282,28 @@ class RequestController extends Controller
             $data['tanggal'] = $pengembalian->tglPeminjaman;
             $data['lokasi'] = $pengembalian->lokasi->alamat;
             $data['keterangan'] = $pengembalian->keterangan;
-        
-            dispatch(new SendEmailRequestRespon($data));
-    
 
-        // Redirect ke halaman indeks permintaan
+            dispatch(new SendEmailRequestRespon($data));
+
+            // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $pengembalian->nama_aset_id)
+                ->where('status', 'Diterima')
+                ->count();
+            // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+            $asetDetail = AsetDetail::findOrFail($pengembalian->nama_aset_id);
+
+            // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+            if ($jumlahPeminjaman == $asetDetail->jumlah) {
+                $asetDetail->update([
+                    'status' => 'Tidak Tersedia'
+                ]);
+            } else {
+                $asetDetail->update([
+                    'status' => 'Tersedia'
+                ]);
+            }
+        }
+
         return redirect(route('request.index'));
     }
 
@@ -290,6 +315,10 @@ class RequestController extends Controller
         // Menentukan status berdasarkan apakah ada gambar atau tidak
         $status = $request->hasFile('image') ? "Disetujui" : "Diproses";
 
+        $request->validate([
+            'keterangan' => 'required|string',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,docx|max:2048', // Max 2MB
+        ]);
         // Jika ada file gambar di-upload, simpan gambar tersebut
         $imagePath = $penghancuran->image;
         if ($request->hasFile('image')) {

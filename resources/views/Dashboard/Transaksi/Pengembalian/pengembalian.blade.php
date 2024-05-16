@@ -2,16 +2,19 @@
 
 @section('pengembalian')
 @if(count($pengembalian) > 0)
-<div class="relative max-w-xs ml-2">
-    <label class="sr-only">Search</label>
-    <input type="text" name="hs-table-with-pagination-search" id="hs-table-with-pagination-search" class="py-2 px-3 ps-9 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" placeholder="Search for items">
-    <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
-      <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <path d="m21 21-4.3-4.3"></path>
-      </svg>
-    </div>
+<div class="relative max-w-xs ml-2 mb-4">
+  <form method="GET" action="{{ route('pengembalian.datapengembalian') }}">
+      <label class="sr-only">Search</label>
+      <input type="text" name="search" id="hs-table-with-pagination-search" value="{{ request('search') }}" class="py-2 px-3 ps-9 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" placeholder="Search for items">
+      <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+        <svg class="size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+      </div>
+  </form>
 </div>
+
 <table class="min-w-full divide-y divide-gray-200">
     <thead class="bg-gray-50">
       <tr>
@@ -124,10 +127,7 @@
             <a class="inline-flex items-center gap-x-1 text-sm text-slate-500 hover:text-slate-700 disabled:opacity-50 decoration-2 hover:underline font-medium" href="{{ route('pengembalian.show', $pe->id) }}">
               Detail
             </a>
-            <a class="inline-flex items-center gap-x-1 text-sm text-green-500 hover:text-green-800 disabled:opacity-50 decoration-2 hover:underline font-medium" href="{{ route('peminjaman.edit', $pe->id) }}">
-              Edit
-            </a>
-            <a class="inline-flex items-center gap-x-1 text-sm text-red-500 hover:text-red-800 decoration-2 hover:underline font-medium" href="{{ route('peminjaman.delete', $pe->id) }}">
+            <a class="inline-flex items-center gap-x-1 text-sm text-red-500 hover:text-red-800 decoration-2 hover:underline font-medium" href="{{ route('pengembalian.delete', $pe->id) }}">
               Delete
             </a>
           </div>
@@ -142,23 +142,37 @@
   <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
     <div>
       <p class="text-sm text-gray-600">
-        <span class="font-semibold text-gray-800">12</span> results
+        <span class="font-semibold text-gray-800">{{ count($pengembalian) }}</span> results
       </p>
     </div>
 
-    <div>
+    <div class="">
       <div class="inline-flex gap-x-2">
-        <button type="button" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
-          <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Prev
-        </button>
+          @if ($pengembalian->previousPageUrl())
+              <a href="{{ $pengembalian->previousPageUrl() }}" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50">
+                  <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  Prev
+              </a>
+          @else
+              <button type="button" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
+                  <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  Prev
+              </button>
+          @endif
 
-        <button type="button" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
-          Next
-          <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
+          @if ($pengembalian->nextPageUrl())
+              <a href="{{ $pengembalian->nextPageUrl() }}" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50">
+                  Next
+                  <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </a>
+          @else
+              <button type="button" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
+                  Next
+                  <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+          @endif
       </div>
-    </div>
+  </div>
   </div>
   @else
   <div class="alert alert-info mt-10 text-center">

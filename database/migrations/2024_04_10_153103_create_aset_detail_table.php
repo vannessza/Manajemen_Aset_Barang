@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('aset_id'); // Menghapus unique()
             $table->string("namaAset");
-            $table->string("detailAset");
+            $table->string("detailAset", 1000);
             $table->string("jenisAset");
             $table->string("klasifikasiAset");
             $table->string("masaRetensi");

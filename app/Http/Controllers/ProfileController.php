@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Jobs\SendEmailRequest;
 use App\Jobs\SendEmailRequestRespon;
 use App\Models\Divisi;
+use App\Models\History;
+use App\Models\Notification;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
 use App\Models\User;
@@ -81,14 +83,27 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function daftaraset(){
+    public function daftaraset(Request $request){
         $user = Auth::user();
 
-        $peminjaman = $user->peminjaman()->where('status', 'Diterima')->get();
+        $search = $request->input('search');
+
         $pengembalian = $user->pengembalian()->where('status', 'Dikembalikan')->get();
+        $peminjaman = $user->peminjaman()->where('status', 'Diterima')
+            ->when($search, function ($query, $search) {
+                return $query->where('kodePeminjaman', 'like', '%' . $search . '%')
+                            ->orWhereHas('user', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('asetDetail', function ($query) use ($search) {
+                                $query->where('namaAset', 'like', '%' . $search . '%');
+                            });
+            })->paginate(10);
 
         $jumlahPeminjaman = $peminjaman->count();
         $jumlahPengembalian = $pengembalian->count();
+        
+
 
         return view('dashboard.profile.daftaraset.daftaraset', compact( 'user', 'peminjaman', 'jumlahPeminjaman', 'jumlahPengembalian'), [
             'title' => 'Profile',
@@ -106,8 +121,10 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function history(){
+    public function history(Request $request){
         $user = Auth::user();
+
+        $search = $request->input('search');
 
         $peminjaman = $user->peminjaman()->where('status', 'Diterima')->get();
         $pengembalian = $user->pengembalian()->where('status', 'Dikembalikan')->get();
@@ -115,7 +132,18 @@ class ProfileController extends Controller
         $jumlahPeminjaman = $peminjaman->count();
         $jumlahPengembalian = $pengembalian->count();
 
-        $history = $user->history()->latest()->get();
+        $history = History::latest()
+            ->when($search, function ($query, $search) {
+                return $query->where('user', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('asetDetail', function ($query) use ($search) {
+                                $query->where('namaAset', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('action', 'like', '%' . $search . '%')
+                            ->orWhereHas('keterangan', 'like', '%' . $search . '%');
+            })
+            ->paginate(10);
 
         return view('dashboard.profile.history', compact( 'user', 'history', 'jumlahPeminjaman', 'jumlahPengembalian'), [
             'title' => 'Profile',
@@ -123,14 +151,24 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function pengembalian($id, Request $request){
+    public function pengembalian($id, Request $request)
+    {
         $user = Auth::user();
         $peminjaman = Peminjaman::findOrFail($id);
+
+        // Cek apakah sudah ada pengembalian untuk peminjaman ini dan statusnya masih Diproses
+        $existingPengembalian = Pengembalian::where('kodePengembalian', $peminjaman->kodePeminjaman)
+                                            ->where('status', 'Diproses')
+                                            ->first();
+
+        if ($existingPengembalian) {
+            return back()->withErrors('Pengembalian sedang diproses atau telah selesai.');
+        }
 
         // Atur tanggal pengembalian sebagai hari ini
         $tglPengembalian = Carbon::now()->toDateString();
 
-        $adminUsers = User::where('role', 'admin')->orWhere('role', 'adminsuper')->get();
+        $notification = Notification::all();
 
         $dataPengembalian = Pengembalian::create([
             'user_id' => $peminjaman->user_id,
@@ -145,7 +183,7 @@ class ProfileController extends Controller
 
         $dataPengembalian->save();
 
-        foreach ($adminUsers as $admin) {
+        foreach ($notification as $admin) {
             $data['email'] = $admin->email;
             $data['request'] = "Pengembalian";
             $data['name'] = $dataPengembalian->user->name;
@@ -153,12 +191,13 @@ class ProfileController extends Controller
             $data['kategori'] = $dataPengembalian->aset->namaAset;
             $data['tanggal'] = $dataPengembalian->tglPengembalian;
             $data['lokasi'] = $dataPengembalian->lokasi->alamat;
-        
+
             dispatch(new SendEmailRequest($data));
         }
 
         return redirect(route('pengembalian.history.user'));
     }
+
 
     /**
      * Update the specified resource in storage.

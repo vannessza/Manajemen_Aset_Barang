@@ -12,12 +12,39 @@ class AsetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $pengguna = Auth::user();
+        $query = $request->input('query');
+
         $aset = Aset::all();
-        $asetDetail = AsetDetail::where('status', 'Tersedia')->get();
-        return view('dashboard.kelolaaset.aset.index', compact('aset', 'asetDetail'), [
+        $asetDetail = AsetDetail::where('status', 'Tersedia')
+        ->where(function($q) use ($query) {
+            $q->where('namaAset', 'like', '%' . $query . '%')
+            ->orWhere('jenisAset', 'like', '%' . $query . '%');
+        })
+        ->paginate(6);
+
+
+        return view('dashboard.kelolaaset.aset.index', compact('aset', 'asetDetail', 'query'), [
+            'title' => 'Aset Detail',
+            'pengguna' => $pengguna
+        ]);
+    }
+
+    public function kategori($id, Request $request){
+        $pengguna = Auth::user();
+        $query = $request->input('query');
+
+        $aset = Aset::all();
+        $asetDetail = AsetDetail::where('id', $id)->where('status', 'Tersedia')
+        ->where(function($q) use ($query) {
+            $q->where('namaAset', 'like', '%' . $query . '%')
+            ->orWhere('jenisAset', 'like', '%' . $query . '%');
+        })
+        ->paginate(6);
+
+        return view('dashboard.kelolaaset.aset.index', compact('aset', 'asetDetail', 'query'), [
             'title' => 'Aset Detail',
             'pengguna' => $pengguna
         ]);
@@ -55,6 +82,9 @@ class AsetController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+
+    
+
     public function edit(string $id)
     {
         //

@@ -58,28 +58,54 @@ class PengembalianController extends Controller
         ]);
     }
 
-    public function pengembalian(){
+    public function pengembalian(Request $request)
+    {
         $pengguna = Auth::user();
-        $pengembalian = Pengembalian::all();
-        $pengembalianDiterima = $pengembalian->filter(function ($pengembalian) {
-            return $pengembalian->status === 'Dikembalikan';
-        });
+        $search = $request->input('search');
+
+        $pengembalian = Pengembalian::where('status', 'Dikembalikan')
+            ->when($search, function ($query, $search) {
+                return $query->where('kodePengembalian', 'like', '%' . $search . '%')
+                            ->orWhereHas('user', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('asetDetail', function ($query) use ($search) {
+                                $query->where('namaAset', 'like', '%' . $search . '%');
+                            });
+            })->paginate(10);
+
         return view('dashboard.transaksi.pengembalian.pengembalian', [
-            'pengembalian' => $pengembalianDiterima,
+            'pengembalian' => $pengembalian,
             'title' => 'Pengembalian',
             'pengguna' => $pengguna
         ]);
     }
 
-    public function history(){
+
+
+    public function history(Request $request)
+    {
         $user = Auth::user();
-        $pengembalian = Pengembalian::latest()->get();
-    
+        $search = $request->input('search');
+
+        $pengembalian = Pengembalian::latest()
+            ->when($search, function ($query, $search) {
+                return $query->where('kodePengembalian', 'like', '%' . $search . '%')
+                            ->orWhereHas('user', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('asetDetail', function ($query) use ($search) {
+                                $query->where('namaAset', 'like', '%' . $search . '%');
+                            });
+            })
+            ->paginate(10);
+
         return view('dashboard.transaksi.pengembalian.history', compact('pengembalian', 'user'), [
             'title' => 'Pengembalian',
             'pengguna' => $user
         ]);
     }
+
 
     public function historyuser(){
         $user = Auth::user();
@@ -176,38 +202,18 @@ class PengembalianController extends Controller
 
         $pengembalian->save();
 
-        // Update status AsetDetail menjadi "Tersedia" jika jumlah peminjaman sama dengan jumlah aset detailnya
-        $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $request->namaAset)
-            ->where('status', 'Diterima')
-            ->count();
-        
-        
-
-        $asetDetail = AsetDetail::findOrFail($request->namaAset);
-        if ($jumlahPeminjaman == $asetDetail->jumlah) {
-            $asetDetail->update([
-                'status' => 'Tersedia'
-            ]);
-        }
-        if ($status === "Dikembalikan") {
-            
-            $peminjaman = Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->first();
-        
-            if ($peminjaman) {
-                if ($peminjaman->image) {
-                    Storage::delete($peminjaman->image);
-                }
-                $peminjaman->update([
-                    'status' => 'Dikembalikan'
-                ]);
-            }
-        
+        if ($status === 'Dikembalikan') {
             $history = History::create([
-                'user_id' => $request->namaPengembali,
-                'user_detail_id' => $request->namaAset,
+                'user_id' => $pengembalian->user_id,
+                'aset_detail_id' => $pengembalian->nama_aset_id,
                 'action' => 'Pengembalian',
                 'keterangan' => 'Pengembalian ' . $pengembalian->aset->namaAset . ' dibuat pada ' . now()->toDateTimeString()
             ]);
+
+            $peminjaman->update([
+                'status' => 'Dikembalikan'
+            ]);
+                
 
             $data['email'] = $pengembalian->user->email;
             $data['respon'] = "Diterima";
@@ -220,12 +226,27 @@ class PengembalianController extends Controller
             $data['keterangan'] = $pengembalian->keterangan;
         
             dispatch(new SendEmailRequestRespon($data));
+                // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $pengembalian->nama_aset_id)
+            ->where('status', 'Diterima')
+            ->count();
+            // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+            $asetDetail = AsetDetail::findOrFail($pengembalian->nama_aset_id);
 
+            // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+            if ($jumlahPeminjaman == $asetDetail->jumlah) {
+            $asetDetail->update([
+            'status' => 'Tidak Tersedia'
+            ]);
+            } else {
+            $asetDetail->update([
+            'status' => 'Tersedia'
+            ]);
+            }
             return redirect(route('pengembalian.datapengembalian'));
         }else{
-            return redirect(route('pengembalian.history'));
+             return redirect(route('pengembalian.history'));
         }
-
         
     }
 
@@ -440,7 +461,7 @@ class PengembalianController extends Controller
 
         $pengembalian = Pengembalian::findOrFail($id);
 
-        $status = $request->image ? "Dikembalikan" : "Diproses";
+        // $status = $request->image ? "Dikembalikan" : "Diproses";
 
         $request->validate([
             'keterangan' => 'required|string',
@@ -454,10 +475,6 @@ class PengembalianController extends Controller
         $imagePath = $request->image;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('pengembalian-images');
-            
-            if ($pengembalian->image) {
-                Storage::delete($pengembalian->image);
-            }
         }
 
         $pengembalian->update([
@@ -473,39 +490,19 @@ class PengembalianController extends Controller
         ]);
 
         $pengembalian->save();
-
-        // Update status AsetDetail menjadi "Tersedia" jika jumlah peminjaman sama dengan jumlah aset detailnya
-        $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $request->namaAset)
-            ->where('status', 'Diterima')
-            ->count();
         
-        
-
-        $asetDetail = AsetDetail::findOrFail($request->namaAset);
-        if ($jumlahPeminjaman == $asetDetail->jumlah) {
-            $asetDetail->update([
-                'status' => 'Tersedia'
-            ]);
-        }
-        if ($status === "Dikembalikan") {
-            
-            $peminjaman = Peminjaman::where('kodePeminjaman', $pengembalian->kodePengembalian)->first();
-        
-            if ($peminjaman) {
-                if ($peminjaman->image) {
-                    Storage::delete($peminjaman->image);
-                }
-                $peminjaman->update([
-                    'status' => 'Dikembalikan'
-                ]);
-            }
-        
+        if ($status === 'Dikembalikan') {
             $history = History::create([
-                'user_id' => $request->namaPengembali,
-                'user_detail_id' => $request->namaAset,
+                'user_id' => $pengembalian->user_id,
+                'aset_detail_id' => $pengembalian->nama_aset_id,
                 'action' => 'Pengembalian',
                 'keterangan' => 'Pengembalian ' . $pengembalian->aset->namaAset . ' dibuat pada ' . now()->toDateTimeString()
             ]);
+
+            $peminjaman->update([
+                'status' => 'Dikembalikan'
+            ]);
+                
 
             $data['email'] = $pengembalian->user->email;
             $data['respon'] = "Diterima";
@@ -518,11 +515,29 @@ class PengembalianController extends Controller
             $data['keterangan'] = $pengembalian->keterangan;
         
             dispatch(new SendEmailRequestRespon($data));
+                // Mengecek jumlah peminjaman dengan nama_aset_id yang sama
+            $jumlahPeminjaman = Peminjaman::where('nama_aset_id', $pengembalian->nama_aset_id)
+            ->where('status', 'Diterima')
+            ->count();
+            // Mendapatkan jumlah aset pada AsetDetail dengan id yang sama
+            $asetDetail = AsetDetail::findOrFail($pengembalian->nama_aset_id);
 
+            // Mengubah status aset detail menjadi tidak tersedia jika jumlah peminjaman sama dengan jumlah aset pada AsetDetail
+            if ($jumlahPeminjaman == $asetDetail->jumlah) {
+            $asetDetail->update([
+            'status' => 'Tidak Tersedia'
+            ]);
+            } else {
+            $asetDetail->update([
+            'status' => 'Tersedia'
+            ]);
+            }
             return redirect(route('pengembalian.datapengembalian'));
         }else{
-            return redirect(route('pengembalian.history'));
+             return redirect(route('pengembalian.history'));
         }
+
+        
     }
 
     public function deleteuser($id){
@@ -537,12 +552,13 @@ class PengembalianController extends Controller
     public function delete($id)
     {
         $pengembalian = Pengembalian::findOrFail($id);
+
         $pengembalian->delete();
 
         if ($pengembalian->image) {
             Storage::delete($pengembalian->image);
         }
 
-        return redirect()->route('peminjaman.history');
+        return redirect()->route('pengembalian.history');
     }
 }

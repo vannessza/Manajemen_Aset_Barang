@@ -2,7 +2,7 @@
 
 @section('pengembalian')
 @if(count($pengembalian) > 0)
-<div class="relative max-w-xs ml-2">
+{{-- <div class="relative max-w-xs ml-2">
     <label class="sr-only">Search</label>
     <input type="text" name="hs-table-with-pagination-search" id="hs-table-with-pagination-search" class="py-2 px-3 ps-9 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" placeholder="Search for items">
     <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
@@ -11,7 +11,7 @@
         <path d="m21 21-4.3-4.3"></path>
       </svg>
     </div>
-  </div>
+  </div> --}}
   <div class="overflow-hidden">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">

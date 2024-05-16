@@ -12,9 +12,9 @@
                 <div class="flex">
                     <div class="relative pt-[50%] sm:pt-[70%] rounded-xl overflow-hidden w-9/12">
                         @if ($asetDetail->image)
-                          <img src="{{ asset('image/icon/no_image.png') }}" alt="Default Image" class="size-full absolute top-0 start-0 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-xl">
+                            <img src="{{ asset('storage/'. $asetDetail->image) }}" alt="Default Image" class="size-full absolute top-0 start-0 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-xl">
                         @else
-                          <img src="{{ asset('image/icon/no_image.png') }}" alt="Default Image" class="size-full absolute top-0 start-0 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-xl">
+                            <img src="{{ asset('image/icon/no_image.png') }}" alt="Default Image" class="size-full absolute top-0 start-0 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out rounded-xl">
                         @endif
                     </div>
                     <div>
@@ -30,7 +30,7 @@
                         <p class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ $asetDetail->jumlah}}</p>
                     </div>
                 </div>
-                <h2 class="mb-4 text-xl font-semibold leading-none text-gray-900 md:text-2xl">{{ $asetDetail->namaAset }}</h2>
+                <h2 class="mb-4 text-xl font-semibold leading-none text-gray-900 md:text-2xl mt-4">{{ $asetDetail->namaAset }}</h2>
                 <dl>
                     <dt class="mb-2 font-semibold leading-none text-gray-900">Detail Aset</dt>
                     <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ $asetDetail->detailAset }}</dd>
