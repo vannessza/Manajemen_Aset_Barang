@@ -45,7 +45,9 @@ class UserController extends Controller
         // Melakukan perulangan untuk setiap pengguna
         foreach ($user as $us) {
             // Menghitung jumlah peminjaman untuk setiap pengguna
-            $jumlah = Peminjaman::where('user_id', $us->id)->count();
+            $jumlah = Peminjaman::where('user_id', $us->id)
+            ->where('status', 'Diterima')
+            ->count();
             
             // Menyimpan jumlah peminjaman ke dalam array
             $jumlahPeminjaman[$us->id] = $jumlah;
@@ -681,7 +683,8 @@ class UserController extends Controller
         $user->update([
             'name' => $request->nama,
             'email' => $request->email,
-            'role' => 'user'
+            'divisi'=> $request->divisi,
+            'role' => $request->role,
         ]);
 
         $imagePath = $user->profile->image; // Mendapatkan path gambar lama

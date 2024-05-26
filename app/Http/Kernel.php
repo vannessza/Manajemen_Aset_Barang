@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends HttpKernel
 {
@@ -30,24 +31,20 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            // Middleware default Laravel lainnya
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            // Middleware session expiration
-            \App\Http\Middleware\RedirectIfSessionExpired::class,
-            // Middleware default Laravel lainnya
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-    
+
         'api' => [
-            'throttle:api',
+            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
-    
 
     /**
      * The application's middleware aliases.
@@ -68,11 +65,13 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'role' => \App\Http\Middleware\CheckRole::class,
-        'bothUserAndAdmin' => \App\Http\Middleware\BothUserAndAdmin::class,
-        'bothSuperAdminAndAdmin' => \App\Http\Middleware\BothSuperAdminAndAdmin::class,
-        'vendor' => \App\Http\Middleware\VendorAccess::class,
-        'CheckRole' => \App\Http\Middleware\CheckRole::class,
-        'CheckRolePengguna' => \App\Http\Middleware\CheckRolePengguna::class,
+        'admin' => \App\Http\Middleware\Admin::class
     ];
+
+    public function __construct($app, $router)
+    {
+        parent::__construct($app, $router);
+
+        Log::info('Middleware admin registered: ' . \App\Http\Middleware\Admin::class);
+    }
 }

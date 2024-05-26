@@ -46,7 +46,9 @@ class AdminController extends Controller
         // Melakukan perulangan untuk setiap pengguna
         foreach ($admin as $us) {
             // Menghitung jumlah peminjaman untuk setiap pengguna
-            $jumlah = Peminjaman::where('user_id', $us->id)->count();
+            $jumlah = Peminjaman::where('user_id', $us->id)
+            ->where('status', 'Diterima')
+            ->count();
             
             // Menyimpan jumlah peminjaman ke dalam array
             $jumlahPeminjaman[$us->id] = $jumlah;
@@ -662,7 +664,8 @@ class AdminController extends Controller
         $divisi = Divisi::all();
 
         return view('dashboard.akun.admin.adminedit', compact('divisi', 'admin'), [
-            'title' => 'Edit user'
+            'title' => 'Edit user',
+            'pengguna' => $admin
         ]);
     }
 
@@ -675,7 +678,8 @@ class AdminController extends Controller
         $admin->update([
             'name' => $request->nama,
             'email' => $request->email,
-            'role' => 'user'
+            'divisi'=> $request->divisi,
+            'role' => $request->role,
         ]);
 
         $imagePath = $admin->profile->image; // Mendapatkan path gambar lama

@@ -36,8 +36,8 @@
                         </select>
                     </div>
                     <div class="">
-                        <label for="klasifikasiAset" class="block mb-2 text-sm font-medium text-gray-900">Role</label>
-                        <select id="klasifikasiAset" name="klasifikasiAset" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
+                        <label for="role" class="block mb-2 text-sm font-medium text-gray-900">Role</label>
+                        <select id="role" name="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
                             <option value="">Pilih Role</option>
                             <option value="Admin"{{ $user->role === 'admin' ? 'selected' : '' }} >admin</option>
                             <option value="User" {{ $user->role === 'user' ? 'selected' : '' }} >user</option>

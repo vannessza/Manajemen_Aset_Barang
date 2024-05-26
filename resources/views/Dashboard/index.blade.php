@@ -2,19 +2,19 @@
 
 @section('container')
 @if(Auth::user()->hasRole('adminsuper'))
-<div class="container mt-36 mb-10 lg:flex justify-center">
+<div class="container mt-36 mb-10 xl:flex justify-center">
     <div class="bg-white w-auto h-96 rounded-xl flex justify-center items-center shadow-xl max-w-md mx-auto">
         <div class="p-4 text-center">
             <h1 class="font-semibold text-xl mb-8">Selamat Datang {{ $pengguna->name }}</h1>
             <div class="flex flex-wrap justify-center gap-4 font-bold">
-                <a href="{{ route('dataaset.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data Aset</div></a>
-                <a href="{{ route('peminjaman.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Peminjaman</div></a>
-                <a href="{{ route('pengembalian.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Pengembalian</div></a>
-                <a href="{{ route('user.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data User</div></a>
+                <a href="{{ route('dataaset.index') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data Aset</div></a>
+                <a href="{{ route('peminjaman.datapeminjaman') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Peminjaman</div></a>
+                <a href="{{ route('pengembalian.datapengembalian') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Pengembalian</div></a>
+                <a href="{{ route('user.index') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data User</div></a>
             </div>
         </div>
     </div>
-    <div class="mt-10 lg:mt-0">
+    <div class="mt-10 lg:mt-10 xl:mt-0 mx-auto lg:px-20 xl:px-0">
         <div class="lg:flex justify-between">
             <div>
                 <a href="{{ route('admin.index') }}">
@@ -33,7 +33,7 @@
                 </a>
             </div>
             <div class="mt-10 lg:mt-0 lg:ml-4">
-                <a href="{{ route('peminjaman.index') }}">
+                <a href="{{ route('peminjaman.datapeminjaman') }}">
                     <div class="bg-white w-full lg:w-96 h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">
@@ -50,7 +50,7 @@
         </div>
         <div class="lg:flex justify-between mt-10">
             <div class="mt-10 lg:mt-0">
-                <a href="{{ route('pengembalian.index') }}">
+                <a href="{{ route('pengembalian.datapengembalian') }}">
                     <div class="bg-white w-full lg:w-96  h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">
@@ -125,17 +125,17 @@
         <div class="p-4 text-center">
             <h1 class="font-semibold text-xl mb-8">Selamat Datang {{ $pengguna->name }}</h1>
             <div class="flex flex-wrap justify-center gap-4 font-bold">
-                <a href="{{ route('aset.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Aset</div></a>
-                <a href="{{ route('peminjaman.index.user') }}" class="flex items-center justify-center py-4 px-8 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Peminjaman</div></a>
-                <a href="{{ route('pengembalian.index.user') }}" class="flex items-center justify-center py-4 px-8 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Pengembalian</div></a>
-                <a href="{{ route('profile.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Profile</div></a>
+                <a href="{{ route('aset.index') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Aset</div></a>
+                <a href="{{ route('peminjaman.datapeminjaman.user') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Aset Peminjaman</div></a>
+                <a href="{{ route('pengembalian.datapengembalian.user') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Aset Pengembalian</div></a>
+                <a href="{{ route('profile.index') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Profile</div></a>
             </div>
         </div>
     </div>
     <div class="mt-10 lg:mt-0">
         <div class="lg:flex justify-between">
             <div>
-                <a href="{{ route('admin.index') }}">
+                <a href="{{ route('aset.index') }}">
                     <div class="bg-white w-full lg:w-96 h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">
@@ -151,7 +151,7 @@
                 </a>
             </div>
             <div class="mt-10 lg:mt-0 lg:ml-4">
-                <a href="{{ route('peminjaman.index') }}">
+                <a href="{{ route('peminjaman.datapeminjaman.user') }}">
                     <div class="bg-white w-full lg:w-96 h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">
@@ -168,7 +168,7 @@
         </div>
         <div class="lg:flex justify-between mt-10">
             <div class="mt-10 lg:mt-0">
-                <a href="{{ route('pengembalian.index') }}">
+                <a href="{{ route('pengembalian.datapengembalian.user') }}">
                     <div class="bg-white w-full lg:w-96  h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">
@@ -193,10 +193,10 @@
         <div class="p-4 text-center">
             <h1 class="font-semibold text-xl mb-8">Selamat Datang {{ $pengguna->name }}</h1>
             <div class="flex flex-wrap justify-center gap-4 font-bold">
-                <a href="{{ route('dataaset.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data Aset</div></a>
-                <a href="{{ route('peminjaman.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Peminjaman</div></a>
-                <a href="{{ route('pengembalian.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Pengembalian</div></a>
-                <a href="{{ route('user.index') }}" class="flex items-center justify-center py-4 px-8 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data User</div></a>
+                <a href="{{ route('dataaset.index') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#F8DAA1] text-[#FFA800] rounded-xl hover:bg-[#F1B94D] hover:text-[#634100] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data Aset</div></a>
+                <a href="{{ route('peminjaman.datapeminjaman') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#B0BAF0] text-[#3051FF] rounded-xl hover:bg-[#5872F9] hover:text-[#000F5B] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Peminjaman</div></a>
+                <a href="{{ route('pengembalian.datapengembalian') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#BAF9EE] text-[#00FFF0] rounded-xl hover:bg-[#6AFFE5] hover:text-[#00534E] transition duration-300"><div class="w-[100px] h-[100px] py-7">Data Pengembalian</div></a>
+                <a href="{{ route('user.index') }}" class="flex items-center justify-center md:py-4 md:px-8 py-2 px-4 bg-[#F9BABA] text-[#FF0F00] rounded-xl hover:bg-[#FB6565] hover:text-[#640802] transition duration-300"><div class="w-[100px] h-[100px] py-10">Data User</div></a>
             </div>
         </div>
     </div>
@@ -219,7 +219,7 @@
                 </a>
             </div>
             <div class="mt-10 lg:mt-0 lg:ml-4">
-                <a href="{{ route('peminjaman.index') }}">
+                <a href="{{ route('peminjaman.datapeminjaman') }}">
                     <div class="bg-white w-full lg:w-96 h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">
@@ -236,7 +236,7 @@
         </div>
         <div class="lg:flex justify-between mt-10">
             <div class="mt-10 lg:mt-0">
-                <a href="{{ route('pengembalian.index') }}">
+                <a href="{{ route('pengembalian.datapengembalian') }}">
                     <div class="bg-white w-full lg:w-96  h-[176px] rounded-xl shadow-xl max-w-md mx-auto">
                         <div class="flex justify-between">
                             <div class="pt-5 pl-8">

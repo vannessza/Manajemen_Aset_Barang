@@ -108,7 +108,7 @@
                       </div>
                   </div>
                   @endif
-                  @if(count($penghancuran) > 0)
+                  @if(Auth::user()->hasRole('adminsuper'))
                   <div>
                       <div class="py-3 px-4">
                         <h1 class="text-lg font-semibold text-gray-900">Penghancuran</h1>

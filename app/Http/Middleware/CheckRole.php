@@ -13,9 +13,9 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next, ...$role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (in_array($request->user()->role, $role)) {
+        if ($request->user() && in_array($request->user()->role, $roles)) {
             return $next($request);
         }
         return redirect('/dashboard');
