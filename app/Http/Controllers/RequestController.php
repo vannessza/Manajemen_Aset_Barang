@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmailRequestPenghancuranRespon;
 use App\Jobs\SendEmailRequestRespon;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
@@ -69,9 +70,10 @@ class RequestController extends Controller
     public function terimapengembalian($id)
     {
         $pengguna = Auth::user();
+        $lokasi = Lokasi::all();
         $pengembalian = Pengembalian::findOrFail($id);
         
-        return view('dashboard.transaksi.request.terimapengembalian', compact('pengembalian'),[
+        return view('dashboard.transaksi.request.terimapengembalian', compact('pengembalian', 'lokasi'),[
             'title' => 'Terima',
             'pengguna' => $pengguna
         ]);
@@ -255,6 +257,7 @@ class RequestController extends Controller
         // Memperbarui data pengembalian
         $pengembalian->update([
             'keterangan' => $request->keterangan,
+            'lokasi'=> $request->lokasi,
             'image' => $imagePath,
             'status' => $status,
         ]);
@@ -332,14 +335,32 @@ class RequestController extends Controller
 
         // Memperbarui data pengembalian
         $penghancuran->update([
-            'pengesahab' => $user,
+            'pengesahan' => $user->id,
             'keterangan' => $request->keterangan,
             'image' => $imagePath,
             'status' => $status,
         ]);
 
-        // Menghapus peminjaman berdasarkan  kode peminjaman
-        AsetDetail::where('namaAset', $penghancuran->nama_aset)->delete();
+        $penghancuran->save();
+
+        if ($status === 'Disetujui') {
+
+            $data['email'] = $penghancuran->userpemohon->email;
+            $data['respon'] = "Diterima";
+            $data['request'] = "Penghancuran";
+            $data['aset'] = $penghancuran->aset->namaAset;
+            $data['nama_aset'] = $penghancuran->nama_aset;
+            $data['tipePemusnahan'] = $penghancuran->tipePemusnahan;
+            $data['tglPemusnahan'] = $penghancuran->tglPemusnahan;
+            $data['pemohon'] = $penghancuran->userpemohon->name;
+
+            dispatch(new SendEmailRequestPenghancuranRespon($data));
+
+            // Menghapus peminjaman berdasarkan  kode peminjaman
+            AsetDetail::where('namaAset', $penghancuran->nama_aset)->delete();
+        }
+
+        
 
         // Redirect ke halaman indeks permintaan
         return redirect(route('request.index'));
@@ -394,6 +415,17 @@ class RequestController extends Controller
             'keterangan' => $request->keterangan,
             'status' => "Ditolak"
         ]);
+
+            $data['email'] = $penghancuran->userpemohon->email;
+            $data['respon'] = "Ditolak";
+            $data['request'] = "Penghancuran";
+            $data['aset'] = $penghancuran->aset->namaAset;
+            $data['nama_aset'] = $penghancuran->nama_aset;
+            $data['tipePemusnahan'] = $penghancuran->tipePemusnahan;
+            $data['tglPemusnahan'] = $penghancuran->tglPemusnahan;
+            $data['pemohon'] = $penghancuran->userpemohon->name;
+
+            dispatch(new SendEmailRequestPenghancuranRespon($data));
     
         // Redirect ke halaman indeks permintaan
         return redirect(route('request.index'));

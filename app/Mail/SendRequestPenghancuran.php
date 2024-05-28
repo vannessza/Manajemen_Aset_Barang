@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendRequestrespon extends Mailable
+class SendRequestPenghancuran extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +28,7 @@ class SendRequestrespon extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Request',
+            subject: 'Request Penghancuran',
         );
     }
 
@@ -38,7 +38,7 @@ class SendRequestrespon extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.requestrespon',
+            view: 'emails.requestpenghancuran',
             with: $this->mailData
         );
     }

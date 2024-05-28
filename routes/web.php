@@ -137,6 +137,8 @@ Route::middleware(['auth', CheckRole::class. ':admin,adminsuper'])->group(functi
     Route::post('/penghancuran/store', [PenghancuranController::class, 'store'])->name('penghancuran.store');
     Route::get('/penghancuran/delete/{id}', [PenghancuranController::class, 'delete'])->name('penghancuran.delete');
     Route::get('/penghancuran/show/{id}', [PenghancuranController::class, 'show'])->name('penghancuran.show');
+    Route::get('/penghancuran/show/history/{id}', [PenghancuranController::class, 'showhistory'])->name('penghancuran.show.history');
+    Route::get('/penghancuran/show/export-bukti-formulir/{id}', [PenghancuranController::class, 'exportformulirbukti'])->name('penghancuran.export.bukti');
     Route::get('/penghancuran/edit/{id}', [PenghancuranController::class, 'edit'])->name('penghancuran.edit');
     Route::patch('/penghancuran/{id}', [PenghancuranController::class, 'update'])->name('penghancuran.update');
     //Request

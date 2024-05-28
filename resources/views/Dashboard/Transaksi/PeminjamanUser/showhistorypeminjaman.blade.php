@@ -46,6 +46,10 @@
                     <p class="text-sm">{{ $peminjaman->tglPeminjaman}}</p>
                 </div>
                 <div class="mt-2 flex">
+                    <p class="w-60">Lokasi</p>
+                    <p class="text-sm">{{ $peminjaman->tglPeminjaman}}</p>
+                </div>
+                <div class="mt-2 flex">
                     <p class="w-60">Status</p>
                     <p class="text-sm  @if ($peminjaman->status === 'Diterima')
                         text-green-600 font-semibold

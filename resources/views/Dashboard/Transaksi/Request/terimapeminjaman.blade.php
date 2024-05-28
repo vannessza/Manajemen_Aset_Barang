@@ -32,7 +32,7 @@
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label for="keterangan" class="block mb-2 text-sm font-medium text-gray-900">Keterangan</label>
-                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required></textarea>          
+                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required>{{ $peminjaman->keterangan }}</textarea>          
                         @error('keterangan')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror          

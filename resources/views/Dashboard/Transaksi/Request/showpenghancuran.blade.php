@@ -29,6 +29,10 @@
                     <p class="text-sm">{{ $penghancuran->tglPemusnahan }}</p>
                 </div>
                 <div class="mt-2 flex">
+                    <p class="w-60">Tipe Pemusnahan</p>
+                    <p class="text-sm">{{ $penghancuran->tipePemusnahan }}</p>
+                </div>
+                <div class="mt-2 flex">
                     <p class="w-60">Status</p>
                     <p class="text-sm  @if ($penghancuran->status === 'Disetujui')
                         text-green-600 font-semibold

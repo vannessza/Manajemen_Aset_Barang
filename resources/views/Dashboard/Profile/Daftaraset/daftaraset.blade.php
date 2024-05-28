@@ -106,7 +106,7 @@
                               <div class="px-6 py-3">
                                 <div class="flex items-center gap-x-3">
                                     @if ($pe->asetDetail->image)
-                                        <img src="{{ asset('storage/'. $us->profile->image) }}" alt="User Image" class="inline-block h-10 w-10 rounded-full">
+                                    <img src="{{ asset('storage/'. $pe->asetDetail->image) }}" alt="User Image" class="inline-block h-10 w-10 rounded-full">
                                     @else
                                         <img src="{{ asset('image/icon/no_image.png') }}" alt="Default Image" class="inline-block h-10 w-10 rounded-full">
                                     @endif

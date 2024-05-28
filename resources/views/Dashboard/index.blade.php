@@ -120,7 +120,7 @@
 </div>
 @endif
 @if(Auth::user()->hasRole('user'))
-<div class="container mt-36 mb-10 lg:flex justify-center">
+<div class="container mt-36 mb-10 xl:flex justify-center">
     <div class="bg-white w-auto h-96 rounded-xl flex justify-center items-center shadow-xl max-w-md mx-auto">
         <div class="p-4 text-center">
             <h1 class="font-semibold text-xl mb-8">Selamat Datang {{ $pengguna->name }}</h1>
@@ -132,7 +132,7 @@
             </div>
         </div>
     </div>
-    <div class="mt-10 lg:mt-0">
+    <div class="mt-10 lg:mt-10 xl:mt-0 mx-auto lg:px-20 xl:px-0">
         <div class="lg:flex justify-between">
             <div>
                 <a href="{{ route('aset.index') }}">
@@ -188,7 +188,7 @@
 </div>
 @endif
 @if(Auth::user()->hasRole('admin'))
-<div class="container mt-36 mb-10 lg:flex justify-center">
+<div class="container mt-36 mb-10 xl:flex justify-center">
     <div class="bg-white w-auto h-96 rounded-xl flex justify-center items-center shadow-xl max-w-md mx-auto">
         <div class="p-4 text-center">
             <h1 class="font-semibold text-xl mb-8">Selamat Datang {{ $pengguna->name }}</h1>
@@ -200,7 +200,7 @@
             </div>
         </div>
     </div>
-    <div class="mt-10 lg:mt-0">
+    <div class="mt-10 lg:mt-10 xl:mt-0 mx-auto lg:px-20 xl:px-0">
         <div class="lg:flex justify-between">
             <div>
                 <a href="{{ route('admin.index') }}">

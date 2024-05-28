@@ -11,4 +11,13 @@ class Lokasi extends Model
 
     protected $table = "lokasi";
     protected $fillable = ['kodeLokasi', 'alamat'];
+
+    public function Peminjaman()
+    {
+        return $this->hasMany(Peminjaman::class);
+    }
+    public function Pengembalian()
+    {
+        return $this->hasMany(Pengembalian::class);
+    }
 }

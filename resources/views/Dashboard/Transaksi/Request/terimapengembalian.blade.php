@@ -32,10 +32,19 @@
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label for="keterangan" class="block mb-2 text-sm font-medium text-gray-900">Keterangan</label>
-                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required></textarea>  
+                        <textarea id="keterangan" name="keterangan" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 " placeholder="Tulis Keterangan di sini..." required>{{ $pengembalian->keterangan }}</textarea>  
                         @error('keterangan')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror                     
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="lokasi" class="block mb-2 text-sm font-medium text-gray-900">Lokasi Pengembalian</label>
+                        <select id="lokasi" name="lokasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" required>
+                            <option value="">Pilih Lokasi</option>
+                            @foreach ($lokasi as $lo)
+                                <option value="{{ $lo->id }}" {{ $lo->id == $pengembalian->lokasi_id ? 'selected' : '' }}>{{ $lo->alamat }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="sm:col-span-2">
                         <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Upload Formulir</label>
